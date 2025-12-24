@@ -90,6 +90,44 @@
             </div>
 
             <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+
+                <div class="flex-flex-col">
+                    <img id="afsky_placeholder" src="./media/img/webp/afsky.webp" class="w-full aspect-square">
+                    <iframe id="afsky" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
+                        loading="lazy"
+                        src="https://bandcamp.com/EmbeddedPlayer/album=449030136/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=614358010/transparent=true/"
+                        seamless><a href="https://afsky.bandcamp.com/album/f-llesskab">Fællesskab by AFSKY</a></iframe>
+
+                    <li class="w-full bg-black text-white item text-sm border-t">
+                        <input type="checkbox" id="detail-afsky" class="peer appearance-none" />
+                        <label for="detail-afsky" class="py-4 cursor-pointer grow">
+                            <p>&#8964; Details</p>
+                        </label>
+                        <div class="content">
+                            <p>my absolute favorite black metal band currently</p>
+                        </div>
+                    </li>
+                </div>
+
+                <div class="flex-flex-col">
+                    <img id="lagrimas_placeholder" src="./media/img/webp/lagrimas.webp" class="w-full aspect-square">
+                    <iframe id="lagrimas" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
+                        loading="lazy"
+                        src="https://bandcamp.com/EmbeddedPlayer/album=529436878/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=3895799564/transparent=true/"
+                        seamless><a href="https://lagrimascrust.bandcamp.com/album/a-life-of-destruction">A Life Of
+                            Destruction by lagrimas</a></iframe>
+
+                    <li class="w-full bg-black text-white item text-sm border-t">
+                        <input type="checkbox" id="detail-lagrimas" class="peer appearance-none" />
+                        <label for="detail-lagrimas" class="py-4 cursor-pointer grow">
+                            <p>&#8964; Details</p>
+                        </label>
+                        <div class="content">
+                            <p>excellent emocrust from LA</p>
+                        </div>
+                    </li>
+                </div>
+
                 <div class="flex flex-col">
                     <img id="twitch_placeholder" src="./media/img/webp/twitch.webp" class="w-full aspect-square">
                     <iframe id="twitch" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
@@ -113,8 +151,8 @@
                     <img id="curetaje_placeholder" src="./media/img/webp/curetaje2.webp" class="w-full aspect-square">
                     <iframe id="curetaje" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
                         loading="lazy"
-                        src="https://bandcamp.com/EmbeddedPlayer/album=3802972279/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=313198713/transparent=true/"
-                        seamless><a href="https://curetaje.bandcamp.com/album/alouqua-lilith">Alouqua Lilith by
+                        src="https://bandcamp.com/EmbeddedPlayer/album=3029999770/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=2159102473/transparent=true/"
+                        seamless><a href="https://curetaje.bandcamp.com/album/la-vita">É-la vita... by
                             CURETAJE</a></iframe>
 
                     <li class="w-full bg-black text-white item text-sm border-t">
@@ -123,30 +161,11 @@
                             <p>&#8964; Details</p>
                         </label>
                         <div class="content">
-                            <p>Raw grind-crust-death from Guayakill, Ecuador!</p>
+                            <p>Grind-crust-death from Guayakill, Ecuador!</p>
                         </div>
                     </li>
                 </div>
 
-                <div class="flex flex-col">
-                    <img id="tripu_placeholder" src="./media/img/webp/tripu.webp" class="w-full aspect-square">
-                    <iframe id="tripu" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
-                        loading="lazy"
-                        src="https://bandcamp.com/EmbeddedPlayer/album=3921235070/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=1668885116/transparent=true/"
-                        seamless><a href="https://tripulaciondeosos.bandcamp.com/album/reales-tamarindos">Reales
-                            Tamarindos by Tripulación de Osos</a></iframe>
-
-                    <li class="w-full bg-black text-white item text-sm border-t">
-                        <input type="checkbox" id="detail-tripu" class="peer appearance-none" />
-                        <label for="detail-tripu" class="py-4 cursor-pointer grow">
-                            <p>&#8964; Details</p>
-                        </label>
-                        <div class="content">
-                            <p>If you wanna know what drinking on an afternoon on a rooftop in Ecuador feels like
-                            </p>
-                        </div>
-                    </li>
-                </div>
 
                 <div class="flex flex-col">
                     <img id="abuso_placeholder" src="./media/img/webp/abuso.webp" class="w-full aspect-square">
@@ -161,29 +180,31 @@
                             <p>&#8964; Details</p>
                         </label>
                         <div class="content">
-                            <p>Angry & raw HC-punk/d-beat from Colombia</p>
+                            <p>Angry & raw HC-punk from Colombia</p>
                         </div>
                     </li>
                 </div>
 
-                <div class="flex-flex-col">
-                    <img id="maraudeur_placeholder" src="./media/img/webp/maraudeur.webp" class="w-full aspect-square">
-                    <iframe id="maraudeur" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
+                <!-- 
+                <div class="flex flex-col">
+                    <img id="tripu_placeholder" src="./media/img/webp/tripu.webp" class="w-full aspect-square">
+                    <iframe id="tripu" onload="setupPlaceholderReplacement(event)" class="w-full aspect-square h-0"
                         loading="lazy"
-                        src="https://bandcamp.com/EmbeddedPlayer/album=54173642/size=large/bgcol=333333/linkcol=ffffff/tracklist=false/track=3768572386/transparent=true/"
-                        seamless><a href="https://maraudeur.bandcamp.com/album/puissance-4-2"> PUISSANCE 4 by
-                            MARAUDEUR</a></iframe>
+                        src="https://bandcamp.com/EmbeddedPlayer/album=3921235070/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=1668885116/transparent=true/"
+                        seamless><a href="https://tripulaciondeosos.bandcamp.com/album/reales-tamarindos">Reales
+                            Tamarindos by Tripulación de Osos</a></iframe>
 
                     <li class="w-full bg-black text-white item text-sm border-t">
-                        <input type="checkbox" id="detail-pb" class="peer appearance-none" />
-                        <label for="detail-pb" class="py-4 cursor-pointer grow">
+                        <input type="checkbox" id="detail-tripu" class="peer appearance-none" />
+                        <label for="detail-tripu" class="py-4 cursor-pointer grow">
                             <p>&#8964; Details</p>
                         </label>
                         <div class="content">
-                            <p>Weird AF band with members spread around Europe</p>
+                            <p>What an afternoon in Ecuador feels like
+                            </p>
                         </div>
                     </li>
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -193,7 +214,27 @@
                 /my-projects
             </div>
 
-            <div class="w-full grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div class="w-full grid md:grid-cols-1 xl:grid-cols-4 gap-8">
+
+                <div class="flex flex-col">
+                    <img id="vigastada_placeholder" src="./media/img/webp/vigastada.webp" class="w-full aspect-video">
+                    <iframe id="vigastada" onload="setupPlaceholderReplacement(event)" class="w-full aspect-video h-0"
+                        loading="lazy" src="https://youtube.com/embed/bX_7xIWTWeI?si=Rs_2NVR7gPvkhh7v"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+                    <li class="w-full bg-black text-white item text-sm border-t">
+                        <input type="checkbox" id="detail-vigastada" class="peer appearance-none" />
+                        <label for="detail-vigastada" class="py-4 cursor-pointer grow">
+                            <p>&#8964; Details</p>
+                        </label>
+                        <div class="content">
+                            <p>New death metal band formed with a couple friends from BCN, 05/2025.</p>
+                            </p>
+                        </div>
+                    </li>
+                </div>
 
                 <div class="flex flex-col">
                     <img id="mmv_placeholder" src="./media/img/webp/thumbnail_mmv-min.webp" class="w-full aspect-video">
@@ -264,7 +305,7 @@
                             <p>&#8964; Details</p>
                         </label>
                         <div class="content">
-                            <p>Playthrough recorded in Quito, Ecuador circa 2018.
+                            <p>Instrumental track. This playthrough is from 2018.
                             </p>
                             <p class="mt-2">
                                 {Inserte Pseudónimo Aquí} is my very first personal music project, started in 2013.</p>
@@ -298,7 +339,7 @@
                     target="_blank">Source</a>
                 <a href="/contact.html" class="uppercase px-3 hover:underline" target="_blank">Contact</a>
             </div>
-            <div class="lowercase pb-6">&copy; 2025 // p o i n t l e s s</div>
+            <div class="lowercase pb-6">&copy; 2026 // p o i n t l e s s</div>
         </div>
     </footer>
 
