@@ -1,0 +1,31 @@
+---
+// Placeholder image + iframe pair for the swap script in Layout.astro.
+// The iframe starts at h-0 and replaces the placeholder once loaded.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+    id: string;
+    kind: 'youtube' | 'bandcamp';
+    src: string;
+    cover: ImageMetadata;
+    // Bandcamp's fallback link inside the iframe
+    fallback?: { href: string; text: string };
+}
+
+const { id, kind, src, cover, fallback } = Astro.props;
+// Full class names so Tailwind can see them
+const aspect = { youtube: 'aspect-video', bandcamp: 'aspect-square' }[kind];
+---
+
+<Image id={`${id}_placeholder`} src={cover} width={Math.min(cover.width, 800)} alt="" loading="eager"
+    class={`w-full ${aspect}`} />
+{kind === 'youtube' ? (
+    <iframe id={id} onload="setupPlaceholderReplacement(event)" class={`w-full ${aspect} h-0`}
+        loading="lazy" src={src} title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+) : (
+    <iframe id={id} onload="setupPlaceholderReplacement(event)" class={`w-full ${aspect} h-0`}
+        loading="lazy" src={src} seamless>{fallback && <a href={fallback.href}>{fallback.text}</a>}</iframe>
+)}

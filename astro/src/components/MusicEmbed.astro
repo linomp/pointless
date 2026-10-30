@@ -1,0 +1,27 @@
+---
+// One entry of the music collection: player + "Details" accordion with the markdown body.
+import { render, type CollectionEntry } from 'astro:content';
+import EmbedPlayer from './EmbedPlayer.astro';
+
+interface Props {
+    entry: CollectionEntry<'music'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<div class="flex flex-col">
+    <EmbedPlayer id={entry.id} kind={entry.data.kind} src={entry.data.src} cover={entry.data.cover}
+        fallback={entry.data.fallback} />
+
+    <li class="w-full bg-black text-white item text-sm border-t">
+        <input type="checkbox" id={`detail-${entry.id}`} class="peer appearance-none" />
+        <label for={`detail-${entry.id}`} class="py-4 cursor-pointer grow">
+            <p>&#8964; Details</p>
+        </label>
+        <div class="content md-body">
+            <Content />
+        </div>
+    </li>
+</div>

@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+import frank from '../assets/frank.webp';
+import vio from '../assets/vio.webp';
+---
+
+<Layout flexBody={false}>
+    <header class="w-full container mx-auto">
+        <div class="flex flex-col items-center py-12">
+            <a class="font-bold text-yellow-200 hover:text-yellow-50 text-5xl" href={url('index.html')}>
+                &#123; &#125;
+            </a>
+        </div>
+    </header>
+
+    <div class="border flex flex-col w-1/2 mx-auto space-y-4 text-white bg-black p-6 text-left">
+        <a class="text-normal  hover:text-purple-400 hover:underline m-auto" href="https://github.com/linomp"
+            target="_blank">
+            Github
+        </a>
+        <a class="text-normal hover:text-purple-400 hover:underline m-auto"
+            href="https://www.youtube.com/@thisaintmyrealname1/featured" target="_blank">
+            Youtube
+        </a>
+
+        <a class="text-normal hover:text-purple-400 hover:underline m-auto"
+            href="https://www.instagram.com/black_horizons_" target="_blank">Instagram
+        </a>
+
+        <a class="text-normal hover:text-purple-400 hover:underline m-auto"
+            href="https://soundcloud.com/insertepseudonimoaqui" target="_blank">
+            Soundcloud
+        </a>
+
+        <a class="text-normal hover:text-purple-400 hover:underline m-auto" href="https://www.linkedin.com/in/lino-mp/"
+            target="_blank">Linkedin
+        </a>
+    </div>
+
+    <div class="flex flex-col w-3/4 mx-auto border mt-8 bg-black text-white justify-center p-6 mb-12 items-center">
+        <div class="text-lg mb-2">Also check out my crew:</div>
+        <div class="flex flex-col sm:flex-col md:flex-row space-x-0 md:space-x-6 w-full items-top">
+            <div class="flex flex-col items-end">
+                <Image class="mt-6 border" src={frank} width={1200} alt="Frank's portfolio" />
+
+                <a class="mt-2  bg-black text-yellow-200 hover:text-purple-400 hover:underline"
+                    href="https://frank-mediavilla.netlify.app" target="_blank">
+                    Go to portfolio ➟
+                </a>
+            </div>
+
+            <div class="flex flex-col items-end">
+                <Image class="mt-6 border" src={vio} width={1200} alt="Vio's portfolio" />
+
+                <a class="mt-2 bg-black text-yellow-200 hover:text-purple-400 hover:underline"
+                    href="https://viobrando.cargo.site/" target="_blank">
+                    Go to portfolio ➟
+                </a>
+            </div>
+        </div>
+    </div>
+</Layout>

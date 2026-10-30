@@ -1,0 +1,213 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import blastdetector from '../assets/blastdetector.webp';
+import talk from '../assets/talk_comp.webp';
+import pdmgame from '../assets/pdmgame.webp';
+import svelteQrMqtt from '../assets/svelte-qr-mqtt-min.webp';
+import swarmagan from '../assets/swarmagan_arch.webp';
+---
+
+<Layout>
+    <div class="px-6 mb-3">
+        <div class="flex flex-col shadow px-4 mt-4 mb-8 justify-start p-3 text-white items-center">
+            <span class="px-4  py-4 bg-black uppercase text-medium font-bold text-yellow-200  text-2xl">
+                Dev projects
+            </span>
+        </div>
+
+        <div class="grid lg:gap-8 xl:grid-cols-4 md:grid-cols-1 sm:grid-cols-1 gap-4 mb-5">
+
+            <Card title="The Blast-Beat Detector" year="2025"
+                href="https://github.com/MutilatedPeripherals/blastbeat-detector">
+                <Image class="object-cover w-full px-2" src={blastdetector} alt="The Blast-Beat Detector" />
+                <div class="flex flex-col justify-between p-4 leading-normal">
+                    <p class="mb-3 font-normal text-gray-400">Identify blast-beats in songs using spectral
+                        analysis.</p>
+                    <p class="mb-3 font-normal text-gray-400">The idea was born at an <a
+                            class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://youtu.be/th34zkhEy74?si=7zpWfB0LQ3BzNmUo" target="_blank">Ulcerate</a>
+                        concert in
+                        Barcelona, and later fleshed out during a summer retreat with <a
+                            class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://github.com/m-poh" target="_blank">@m-poh</a> &
+                        <a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://github.com/lmeullibre" target="_blank">@lmeullibre</a> in the beautiful
+                        island of Saaremaa,
+                        Estonia 🇪🇪.
+                    </p>
+                    <p class="mb-3 font-normal text-gray-400">
+                        The project was presented in the <a
+                            class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://pythonleiden.nl/meeting-2025-11-13.html" target="_blank">6th meetup</a> of
+                        the Python
+                        Leiden user group!<a
+                            class="tracking-tight text-yellow-200 hover:text-purple-400 text-white hover:underline"
+                            href="https://docs.google.com/presentation/d/1iJMSQG28AYHlkn9QP00kx2yHenX1uifUPS29b-Rtshc/edit?usp=sharing"
+                            target="_blank">[slides
+                            here]</a>
+                    </p>
+                    <Image id="talk" class="w-3/5" src={talk} alt="Talk at Python Leiden" />
+                    <div class="flex space-x-2 mt-6 mb-4">
+                        <span class="flex items-center px-2 py-1 bg-numpy text-sm font-medium rounded-full">
+                            <a href="https://github.com/adefossez/demucs" target="_blank">demucs</a>
+                        </span>
+                        <span class="flex items-center px-2 py-1 bg-javascript text-sm font-medium rounded-full">
+                            <a href="https://github.com/katspaugh/wavesurfer.js" target="_blank">wavesurfer</a>
+                        </span>
+                    </div>
+                    <div class="flex flex-col mt-4">
+                        <a href="https://mutilatedperipherals.github.io/blastbeat-detector/" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 mb-4 hover:underline">Try
+                            Demo
+                        </a>
+                        <a href="https://github.com/MutilatedPeripherals/blastbeat-detector" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 hover:underline">Check repo
+                        </a>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title="The Predictive Maintenance Game" year="2024" href="https://github.com/linomp/pdm-game">
+                <Image class="object-cover w-full px-2" src={pdmgame} width={1194} alt="The Predictive Maintenance Game" />
+
+                <div class="flex flex-col justify-between p-4 leading-normal">
+                    <p class="mb-3 font-normal text-gray-400">I like this topic so much that I made a game about it.
+                    </p>
+                    <p class="mb-3 font-normal text-gray-400">It's a simulation game where your goal is
+                        to
+                        maximize profit
+                        &
+                        lifespan of your machine, with sensors & predictive analytics at your disposal.</p>
+                    <p class="mb-3 font-normal text-gray-400">Under the hood it uses MQTT for data streaming and a
+                        scikit-learn Support Vector
+                        Regression
+                        (SVR)
+                        model for remaining-useful-lifetime prediction.</p>
+                    <div class="flex space-x-2 mt-6 mb-4">
+                        <span class="flex items-center px-2 py-1 bg-fastapi-light text-sm font-medium rounded-full">
+                            FastAPI
+                        </span>
+                        <span class="flex items-center px-2 py-1 bg-svelte-light text-sm font-medium rounded-full">
+                            Svelte
+                        </span>
+                    </div>
+                    <div class="flex flex-col mt-4">
+                        <a href="https://app.pdmgame.xmp.systems/" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 mb-4 hover:underline">Try
+                            game
+                        </a>
+                        <a href="https://github.com/linomp/pdm-game" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 hover:underline">Check repo
+                        </a>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title="Svelte-QR-MQTT PoC" year="2023" href="https://github.com/MutilatedPeripherals/svelte-qr-mqtt"
+                spacious>
+                <Image class="object-cover w-full px-2" src={svelteQrMqtt} width={1200} alt="Svelte-QR-MQTT PoC" />
+
+                <div class="flex flex-col justify-between p-4">
+                    <p class="mb-3 font-normal text-gray-400">A Svelte app with in-browser QR code
+                        generation + interaction through a smartphone (using MQTT over websockets). </p>
+                    <p class="mb-3 font-normal text-gray-400">This one was fun. It started as a React app, but
+                        then we
+                        migrated it to Svelte over some beers in Warsaw 🇵🇱, where we met up with <a
+                            class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://github.com/m-poh" target="_blank">@m-poh</a> &
+                        <a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://github.com/lmeullibre" target="_blank">@lmeullibre</a>
+                        to attend a <a class="uppercase text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://youtu.be/eknenF4E72c?si=DbHy3ZEXDQEv_d-a" target="_blank">Dying Fetus</a>
+                        show.
+                    </p>
+                    <p class="mb-3 font-normal text-gray-400">
+                        Needless to say, we all walked out
+                        evangelized into Svelte from
+                        that trip.
+                    </p>
+                    <div class="flex space-x-2 mt-6 mb-4">
+                        <span class="flex items-center px-2 py-1 bg-svelte-light text-sm font-medium rounded-full">
+                            Svelte
+                        </span>
+                    </div>
+                    <div class="flex flex-col mt-4">
+                        <a href="https://mutilatedperipherals.github.io/svelte-qr-mqtt/" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 mb-4 hover:underline">Try
+                            app
+                        </a>
+                        <a href="https://github.com/MutilatedPeripherals/svelte-qr-mqtt" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 hover:underline">Check repo
+                        </a>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title="Swarmagan" year="2023" href="https://github.com/MutilatedPeripherals/swarmagan-junction2023"
+                spacious>
+                <Image class="object-cover w-full px-4" src={swarmagan} alt="Swarmagan architecture" />
+
+                <div class="flex flex-col justify-between p-4">
+                    <p class="mb-3 font-normal text-gray-400">"Swarm-assisted conversational vendor data
+                        aggregator" (fancy name for a RAG-powered chat app). It was our first time playing with
+                        LLMs and our
+                        entry for Junction Hackathon 2023 in Helsinki 🇫🇮.</p>
+
+                    <p class="mt-3 mb-3 font-bold font text-gray-400">Our team: </p>
+
+
+                    <ul class="list-outside list-['-_'] pl-5 space-y-2 text-gray-400 text-sm">
+                        <li class="font-bold"><a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                                href="https://github.com/Steve389" target="_blank">@Steve389</a>: <span
+                                class="font-normal">Head of Data,
+                                AI and media.</span></li>
+                        <li class="font-bold"><a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                                href="https://github.com/ekeshi1" target="_blank">@ekeshi1</a>: <span
+                                class="font-normal">UI/UX
+                                Revolutionary Disrupter.</span></li>
+                        <li class="font-bold"><a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                                href="https://github.com/m-poh" target="_blank">@m-poh</a>: <span
+                                class="font-normal">Estonian Food
+                                and Beverage Import/Export Domain Expert.</span></li>
+                        <li class="font-bold"><a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                                href="https://github.com/linomp" target="_blank">@linomp</a>: <span
+                                class="font-normal">Head of
+                                Indoor Logistics.</span></li>
+                        <li class="font-bold"><a class="text-yellow-200 hover:text-purple-400 hover:underline"
+                                href="https://github.com/lmeullibre" target="_blank">@lmeullibre</a>: <span
+                                class="font-normal">Chairman
+                                of the Board.</span></li>
+                    </ul>
+                    <p class="mt-5 mb-3 font-normal text-xs text-gray-400">(text credits: <a
+                            class="text-yellow-200 hover:text-purple-400 hover:underline"
+                            href="https://github.com/lmeullibre" target="_blank">@lmeullibre</a>)</p>
+                    <div class="flex space-x-2 mt-6 mb-4">
+                        <span class="flex items-center px-2 py-1 bg-fastapi-light text-sm font-medium rounded-full">
+
+                            FastAPI
+                        </span>
+                        <span class="flex items-center px-2 py-1 bg-svelte-light text-sm font-medium rounded-full">
+
+                            Svelte
+                        </span>
+                    </div>
+                    <div class="flex flex-col mt-4">
+                        <a href="https://github.com/MutilatedPeripherals/swarmagan-junction2023" target="_blank"
+                            class="w-fit uppercase text-yellow-200 hover:text-purple-400 hover:underline">Check repo
+                        </a>
+                    </div>
+                </div>
+            </Card>
+
+        </div>
+
+        <div class="flex flex-col shadow px-4 mt-8 justify-start p-6 text-white items-center mb-4">
+            <a class="px-4 bg-black text-yellow-200 hover:text-purple-400 hover:underline"
+                href="https://github.com/linomp" target="_blank">
+                See more projects on github ➟
+            </a>
+        </div>
+    </div>
+</Layout>

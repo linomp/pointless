@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import MusicEmbed from '../components/MusicEmbed.astro';
+
+const entries = (await getCollection('music')).sort((a, b) => a.data.order - b.data.order);
+const projects = entries.filter((e) => e.data.section === 'projects');
+const recommended = entries.filter((e) => e.data.section === 'recommended');
+---
+
+<Layout>
+    <div class="flex flex-col shadow mt-4 mb-2 justify-start p-3 text-white items-center">
+        <span class="px-4  py-4 bg-black uppercase text-medium font-bold text-yellow-200  text-2xl">
+            music
+        </span>
+    </div>
+
+    <div class="flex flex-col mb-12 mt-4 md:mx-12 px-4">
+        <div class="flex flex-col sm:items-center md:items-start w-full">
+            <div class="mt-4 mb-4 p-4 bg-black text-medium font-bold text-yellow-200  text-2xl w-fit">
+                /my-projects
+            </div>
+
+            <div class="w-full grid md:grid-cols-1 xl:grid-cols-4 gap-8">
+                {projects.map((entry) => <MusicEmbed entry={entry} />)}
+            </div>
+        </div>
+
+        <div class=" flex flex-col mt-8 sm:items-center md:items-start w-full">
+
+            <div class="mb-4 p-4 bg-black text-medium font-bold text-yellow-200  text-2xl w-fit">
+                /recommended
+            </div>
+
+            <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+                {recommended.map((entry) => <MusicEmbed entry={entry} />)}
+            </div>
+        </div>
+    </div>
+</Layout>
