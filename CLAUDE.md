@@ -74,7 +74,7 @@ media/img/webp/ compressed images used for cards and embed placeholders
 
 ## Building CSS
 
-Tailwind v3 (config in `tailwind.config.js`, `@tailwind` directives in `input.css`). The `tailwindcss` CLI isn't vendored; it is expected on `PATH` (e.g. the standalone binary).
+Tailwind **v3.4.19**, standalone binary on `PATH` (installed from the GitHub release, SHA-256 checked). Config in `tailwind.config.js`, `@tailwind` directives in `input.css`. **Staying on v3 on purpose:** v4 changes default styles (border colour, hover, spacing selectors) and the browser baseline, and every page would need checking by eye. Don't upgrade or suggest it unless asked.
 
 ```bash
 ./build.sh   # tailwindcss -i ./css/input.css -o ./css/output.css --minify
