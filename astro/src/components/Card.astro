@@ -1,0 +1,26 @@
+---
+// Frame of a dev project card on code.astro. The body (image, text, pills, links) goes in the slot.
+interface Props {
+    title: string;
+    year: string;
+    href: string;
+    // The older cards have a bit more space under the title and year
+    spacious?: boolean;
+}
+
+const { title, year, href, spacious = false } = Astro.props;
+---
+
+<div class="flex flex-col items-start border shadow w-full bg-black p-2 justify-start h-fit">
+    <div class="p-4">
+        <a href={href} target="_blank">
+            <h5 class:list={[spacious ? "mb-2" : "mb-1", "text-2xl font-bold tracking-tight text-white hover:underline"]}>
+                {title}</h5>
+        </a>
+        <h6 class:list={[{ "mb-4": spacious }, "text-s font-bold tracking-tight text-white"]}>{year}</h6>
+    </div>
+
+    <div class="flex flex-col items-center">
+        <slot />
+    </div>
+</div>

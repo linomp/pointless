@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+
+const photos = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout>
+    <header class="w-full container mx-auto">
+        <div class="flex flex-col items-center py-12">
+            <a class="font-bold text-yellow-200 hover:text-yellow-50 text-5xl" href={url('index.html')}>
+                &#123; &#125;
+            </a>
+            <p class="text-lg text-white mt-4">
+                Between two worlds
+            </p>
+        </div>
+    </header>
+
+    <div class="container mx-auto flex flex-wrap mb-12">
+        <section class="w-full md:w-3/3 flex flex-col items-center px-3">
+            {photos.map(({ data }, i) => (
+                <article class:list={["flex flex-col shadow", i === 0 ? "mb-4" : "my-6"]}>
+                    <div class="max-w-screen-md">
+                        <Image src={data.photo} width={Math.min(data.photo.width, 1536)} alt={data.title} />
+                    </div>
+                    <div class="max-w-screen-md bg-black flex flex-col justify-start p-6">
+                        <span class="text-white text-3xl font-bold">{data.title}</span>
+                        <p class="text-white text-sm">
+                            {data.caption}
+                        </p>
+                    </div>
+                </article>
+            ))}
+        </section>
+    </div>
+</Layout>
