@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 // One markdown file per embed on the music page; the body is the "Details" text.
-// The cover image sits next to the markdown file.
+// YouTube entries get their thumbnail fetched at build time; Bandcamp entries need a "cover:" (album art) next to the file.
 const music = defineCollection({
     loader: glob({ pattern: '*.md', base: './src/content/music' }),
     schema: ({ image }) => z.object({
@@ -11,7 +11,8 @@ const music = defineCollection({
         order: z.number(),
         kind: z.enum(['youtube', 'bandcamp']),
         src: z.url(),
-        cover: image(),
+        // Required for bandcamp; for youtube it overrides the fetched thumbnail
+        cover: image().optional(),
         fallback: z.object({ href: z.url(), text: z.string() }).optional(),
     }),
 });

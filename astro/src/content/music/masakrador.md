@@ -3,7 +3,6 @@ section: projects
 order: 3
 kind: youtube
 src: https://www.youtube.com/embed/vEPR8mTL3fM?si=qot_3nNyWjDougJX
-cover: ./masakrador.webp
 ---
 Recorded in Manta, Ecuador, 02/2025.
 

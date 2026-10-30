@@ -18,6 +18,8 @@ export default defineConfig({
   base: '/v2',
   // music.html instead of music/index.html, so URLs stay the same as today.
   build: { format: 'file' },
+  // YouTube placeholders are fetched from here at build time (src/lib/covers.ts).
+  image: { domains: ['img.youtube.com'] },
   // Keep whitespace as written: compression drops spaces between text and inline tags ("Manta - <a>Ecuador</a>").
   compressHTML: false,
   markdown: {

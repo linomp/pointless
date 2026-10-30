@@ -181,7 +181,9 @@ npm run build  # static output in astro/dist
 ```
 
 ### Adding things
-- **Video or album on the music page:** drop the cover image (any size, JPG/PNG/WebP) into `src/content/music/` and add `<id>.md` next to it. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio), Bandcamp entries also get a `fallback` link. The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+- **Video or album on the music page:** add `<id>.md` to `src/content/music/`. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio). The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+  - **YouTube:** nothing else needed. The placeholder is the video's own YouTube thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped to 16:9). Add `cover: ./<file>` only to use a different image.
+  - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
 - **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
 - **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
 - **Images anywhere else:** put them in `src/assets/`, import them and use `<Image>` from `astro:assets`. Never reference images from `public/` (they don't get optimized).
