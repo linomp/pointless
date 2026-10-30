@@ -1,13 +1,19 @@
 # CLAUDE.md
 
-Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `CNAME`) via GitHub Pages straight from `main`.
+Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `CNAME`) via GitHub Pages from `main`.
+
+**Two versions live side by side right now:**
+- the **raw site** (repo root, plain HTML) at `/`: everything below describes it unless a section says otherwise;
+- an **Astro port** (`astro/`) at `/v2`, being tested before it replaces the raw site. See "Astro port (`astro/`, served at `/v2`)" at the end and `port-plan.md`.
+
+`.github/workflows/pages.yml` deploys both (`assemble.sh` puts them together). While both exist, content changes have to be made in both places.
 
 ## Hard rules
 
 1. **Don't modernise the look and feel.** The owner likes the style exactly as it is. No trendy web design: no gradients, glassmorphism, rounded cards, drop shadows, hero sections, dark/light toggles, icon libraries, new fonts, fade-in or scroll animations, parallax, or "clean minimal SaaS" redesigns. Don't propose a redesign unprompted. New content copies existing blocks as they are.
 2. **Stick to the colour palette** (see "Colour palette (strict)" below).
 3. **Keep it snappy.** Pages are static HTML and one small CSS file, and should stay that way: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images go in as compressed WebP. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
-4. **No new dependencies** (see below).
+4. **No new dependencies** (see below). The Astro port's dependencies are fixed too (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
 
 ## Philosophy
 
@@ -95,6 +101,14 @@ Links are root-absolute (`/index.html`, `/music.html`), so open the site through
 busybox httpd -f -p 8000   # owner's choice; python3 -m http.server 8000 also works
 ```
 
+To preview exactly what gets deployed (raw site at `/` and Astro at `/v2`), build Astro first (`npm run build` in `astro/`), then:
+
+```bash
+./assemble.sh _site && busybox httpd -f -p 8000 -h _site
+```
+
+`assemble.sh` deletes and recreates `_site`, so restart the server after re-running it.
+
 ## Recurring patterns
 
 ### Page skeleton
@@ -152,3 +166,33 @@ Link style used everywhere for inline links: `text-yellow-200 hover:text-purple-
 - `music.html:236` has `class="flex-flex-col"` (typo, should be `flex flex-col`).
 - `font-roboto` on `<body>` isn't a defined utility; the font actually comes from the `html` rule in `input.css`.
 - Body background uses `url('../media/...')` from root pages; it works because `..` at the root resolves to the root.
+
+## Astro port (`astro/`, served at `/v2`)
+
+Same site, same markup, same look, built with Astro so images get optimized at build time and each embed is written once. All the rules above (look and feel, palette, snappy) apply unchanged. Full background, decisions and gotchas: `port-plan.md`.
+
+### Commands (in `astro/`)
+
+```bash
+nvm use        # Node 26 from .nvmrc
+npm ci         # install exact versions from package-lock.json
+npm run dev    # dev server at http://localhost:4321/v2/
+npm run build  # static output in astro/dist
+```
+
+### Adding things
+- **Video or album on the music page:** drop the cover image (any size, JPG/PNG/WebP) into `src/content/music/` and add `<id>.md` next to it. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio), Bandcamp entries also get a `fallback` link. The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+- **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
+- **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
+- **Images anywhere else:** put them in `src/assets/`, import them and use `<Image>` from `astro:assets`. Never reference images from `public/` (they don't get optimized).
+
+No manual WebP conversion or online compression any more: the build does it (sharp, default quality 80, resized to the `width` given).
+
+### Rules specific to the Astro version
+- **Internal links** always go through `url()` from `src/lib/url.ts` (`url('music.html')`), never a hard-coded `/music.html`, because of the `/v2` base path.
+- **The swap script stays `<script is:inline>`** in `Layout.astro`. A normal `<script>` gets bundled as a module and breaks the iframes' `onload`.
+- **No client-side JS** otherwise: no islands, view transitions or prefetch.
+- **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
+- **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").
+- **Tailwind config** is `astro/tailwind.config.cjs`, a copy of the root one with the same palette lock. Change both while both versions exist.
+- **Parity:** after markup or CSS changes, compare old and `/v2` pages side by side (see "Previewing").

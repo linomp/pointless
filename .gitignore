@@ -2,3 +2,7 @@ media/img/discarded
 media/img/original
 media/img/compressed
 media/img/resized
+astro/node_modules
+astro/dist
+astro/.astro
+_site
