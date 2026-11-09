@@ -28,3 +28,68 @@
         @apply text-yellow-200 hover:text-purple-400 hover:underline;
     }
 }
+
+
+/* Page background fade-in (Layout.astro): a black layer over the background photo whose opacity (--bg-veil)
+   goes from 1 to 0 once the photo has loaded. Registered so it can be transitioned; browsers without
+   @property just show the photo without the fade. */
+@property --bg-veil {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+body {
+    transition: --bg-veil 0.8s ease-out;
+}
+
+body.bg-loading {
+    --bg-veil: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body {
+        transition: none;
+    }
+}
+
+/* Image loader: every <Img> (Img.astro) has the spinning black and white spiral (/spiral.svg, which animates
+   itself) as its background until it has loaded; the image's onload then removes this class.
+   content-box so it never shows in an image's padding or under its border. */
+@layer components {
+    .loading-spiral {
+        background: var(--spiral) center / cover no-repeat;
+        background-clip: content-box;
+        background-origin: content-box;
+    }
+
+    /* the copy of the spiral that fades out over a just-loaded image (spiralFade in Layout.astro) */
+    .spiral-veil {
+        pointer-events: none;
+        animation: spiral-veil-out 0.5s ease-out forwards;
+    }
+
+    @keyframes spiral-veil-out {
+        to {
+            opacity: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .spiral-veil {
+            display: none;
+        }
+    }
+}
+
+/* Embeds (EmbedPlayer.astro): the cover sits on top of the player and fades out when the swap script adds .loaded. */
+@layer components {
+    .embed-cover {
+        transition: opacity 0.4s;
+    }
+
+    .embed-cover.loaded {
+        opacity: 0;
+        pointer-events: none;
+    }
+}

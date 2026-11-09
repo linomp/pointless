@@ -1,9 +1,10 @@
 ---
-// Placeholder image + iframe pair for the swap script in Layout.astro.
-// The iframe starts at h-0 and replaces the placeholder once loaded.
-import { Image } from 'astro:assets';
+// Player box for the swap script in Layout.astro: the iframe always fills the box (so nothing moves),
+// and the cover sits on top of it until the player has loaded, then fades out.
+// While the cover image itself loads, it shows the spinning spiral (Img.astro).
 import type { ImageMetadata } from 'astro';
 import { youtubeCover } from '../lib/covers';
+import Img from './Img.astro';
 
 interface Props {
     id: string;
@@ -24,13 +25,17 @@ const image = cover
     : { ...(await youtubeCover(src)), fit: 'cover' as const };
 ---
 
-<Image id={`${id}_placeholder`} {...image} alt="" loading="eager" class={`w-full ${aspect} object-cover`} />
-{kind === 'youtube' ? (
-    <iframe id={id} onload="setupPlaceholderReplacement(event)" class={`w-full ${aspect} h-0`}
-        loading="lazy" src={src} title="YouTube video player" frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-) : (
-    <iframe id={id} onload="setupPlaceholderReplacement(event)" class={`w-full ${aspect} h-0`}
-        loading="lazy" src={src} seamless>{fallback && <a href={fallback.href}>{fallback.text}</a>}</iframe>
-)}
+<div class={`relative w-full ${aspect}`}>
+    {kind === 'youtube' ? (
+        <iframe id={id} onload="setupPlaceholderReplacement(event)" class="absolute inset-0 w-full h-full"
+            loading="lazy" src={src} title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    ) : (
+        <iframe id={id} onload="setupPlaceholderReplacement(event)" class="absolute inset-0 w-full h-full"
+            loading="lazy" src={src} seamless>{fallback && <a href={fallback.href}>{fallback.text}</a>}</iframe>
+    )}
+    <div id={`${id}_placeholder`} class="embed-cover absolute inset-0">
+        <Img {...image} alt="" loading="eager" class="w-full h-full object-cover" />
+    </div>
+</div>

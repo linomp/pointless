@@ -13,6 +13,11 @@ Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `
 1. **Don't modernise the look and feel.** The owner likes the style exactly as it is. No trendy web design: no gradients, glassmorphism, rounded cards, drop shadows, hero sections, dark/light toggles, icon libraries, new fonts, fade-in or scroll animations, parallax, or "clean minimal SaaS" redesigns. Don't propose a redesign unprompted. New content copies existing blocks as they are.
 2. **Stick to the colour palette** (see "Colour palette (strict)" below).
 3. **Keep it snappy.** Pages are static HTML and one small CSS file, and should stay that way: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images go in as compressed WebP. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
+   - **Deliberate exceptions (owner's request, Astro version only):**
+     - While any image is still loading, a spinning black and yellow-200 hypnotic spiral fills its box. When the image arrives, the spiral crossfades into it (0.5 s); images that were already cached skip the fade. The spiral is generated at build time by `src/pages/spiral.svg.ts` into one shared `/spiral.svg` that spins by itself. It's the image's CSS background (`.loading-spiral`), added by `Img.astro`; the crossfade is `spiralFade()` in `Layout.astro` (a temporary absolutely positioned copy over the image, so layout never moves).
+     - Embed covers fade out (0.4 s) when the player is ready.
+     - The page background starts black and fades in (0.8 s) once its photo has loaded (`--bg-veil` in `input.css`, script at the top of `<body>`).
+     - All of it respects `prefers-reduced-motion`. Don't add animations anywhere else without asking.
 4. **No new dependencies** (see below). The Astro port's dependencies are fixed too (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
 
 ## Philosophy
@@ -186,13 +191,14 @@ npm run build  # static output in astro/dist
   - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
 - **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
 - **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
-- **Images anywhere else:** put them in `src/assets/`, import them and use `<Image>` from `astro:assets`. Never reference images from `public/` (they don't get optimized).
+- **Images anywhere else:** put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`: Astro's `<Image>` plus the loading spiral). Never reference images from `public/` (they don't get optimized).
 
 No manual WebP conversion or online compression any more: the build does it (sharp, default quality 80, resized to the `width` given).
 
 ### Rules specific to the Astro version
 - **Internal links** always go through `url()` from `src/lib/url.ts` (`url('music.html')`), never a hard-coded `/music.html`, because of the `/v2` base path.
 - **The swap script stays `<script is:inline>`** in `Layout.astro`. A normal `<script>` gets bundled as a module and breaks the iframes' `onload`.
+- **Embeds never change size.** Unlike the raw site (placeholder `<img>`, then an `h-0` iframe that grows), `EmbedPlayer.astro` renders one fixed-aspect box: the iframe fills it from the start, and the cover (`#<id>_placeholder`) sits on top and fades out after `load` + 1.5 s. So swapping causes no layout shift, and `loading="lazy"` on the iframes works properly. Keep it that way.
 - **No client-side JS** otherwise: no islands, view transitions or prefetch.
 - **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
 - **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").

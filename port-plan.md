@@ -101,8 +101,11 @@ Found during the port are marked **(found)**.
 - `<script is:inline>` keeps it global so the iframes' `onload="..."` works (Astro would otherwise bundle it as a module).
 - Ids come from the entry's file name (`vigastada`, `vigastada_placeholder`, `detail-vigastada`).
 - Placeholders are `loading="eager"` like before.
+- **Later change: overlay instead of swap.** The iframe now fills a fixed-aspect box from the start, with the cover on top that fades out after `load` + 1.5 s. While any image loads (covers, gallery, cards), a spinning black and yellow-200 spiral (`/spiral.svg`, generated at build, animates itself) is its CSS background; on `onload` it crossfades into the picture (`Img.astro`, `spiralFade()` in `Layout.astro`). The page background fades in from black once its photo has loaded. Measured with the layout-shift API: no shift during the swap, card boxes identical to the raw site at 375 and 1280 px. Side effect: lazy iframes now really load lazily (an `h-0` iframe used to load eagerly).
 - Known limitations unchanged (no JS fallback, 1500 ms guess).
 - **(found) The browser pane in the Claude app doesn't load YouTube/Bandcamp**, so the swap was verified by firing each iframe's `load` event: all 9 placeholders hide and iframes show at the right size. Check real players on `/v2` once live.
+
+- **(found) The dev server renders pages per request**, so awaiting the YouTube thumbnail lookup in each card held back the rest of the page (cards appeared one by one). `covers.ts` caches lookups per video.
 
 ### Images
 - Only images imported from `src/` are optimized, plus remote images from domains listed in `image.domains` (`img.youtube.com`).

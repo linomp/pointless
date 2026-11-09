@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Img from '../components/Img.astro';
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import blastdetector from '../assets/blastdetector.webp';
@@ -21,7 +21,7 @@ import swarmagan from '../assets/swarmagan_arch.webp';
 
             <Card title="The Blast-Beat Detector" year="2025"
                 href="https://github.com/MutilatedPeripherals/blastbeat-detector">
-                <Image class="object-cover w-full px-2" src={blastdetector} alt="The Blast-Beat Detector" />
+                <Img class="object-cover w-full px-2" src={blastdetector} alt="The Blast-Beat Detector" />
                 <div class="flex flex-col justify-between p-4 leading-normal">
                     <p class="mb-3 font-normal text-gray-400">Identify blast-beats in songs using spectral
                         analysis.</p>
@@ -48,7 +48,7 @@ import swarmagan from '../assets/swarmagan_arch.webp';
                             target="_blank">[slides
                             here]</a>
                     </p>
-                    <Image id="talk" class="w-3/5" src={talk} alt="Talk at Python Leiden" />
+                    <Img id="talk" class="w-3/5" src={talk} alt="Talk at Python Leiden" />
                     <div class="flex space-x-2 mt-6 mb-4">
                         <span class="flex items-center px-2 py-1 bg-numpy text-sm font-medium rounded-full">
                             <a href="https://github.com/adefossez/demucs" target="_blank">demucs</a>
@@ -70,7 +70,7 @@ import swarmagan from '../assets/swarmagan_arch.webp';
             </Card>
 
             <Card title="The Predictive Maintenance Game" year="2024" href="https://github.com/linomp/pdm-game">
-                <Image class="object-cover w-full px-2" src={pdmgame} width={1194} alt="The Predictive Maintenance Game" />
+                <Img class="object-cover w-full px-2" src={pdmgame} width={1194} alt="The Predictive Maintenance Game" />
 
                 <div class="flex flex-col justify-between p-4 leading-normal">
                     <p class="mb-3 font-normal text-gray-400">I like this topic so much that I made a game about it.
@@ -107,7 +107,7 @@ import swarmagan from '../assets/swarmagan_arch.webp';
 
             <Card title="Svelte-QR-MQTT PoC" year="2023" href="https://github.com/MutilatedPeripherals/svelte-qr-mqtt"
                 spacious>
-                <Image class="object-cover w-full px-2" src={svelteQrMqtt} width={1200} alt="Svelte-QR-MQTT PoC" />
+                <Img class="object-cover w-full px-2" src={svelteQrMqtt} width={1200} alt="Svelte-QR-MQTT PoC" />
 
                 <div class="flex flex-col justify-between p-4">
                     <p class="mb-3 font-normal text-gray-400">A Svelte app with in-browser QR code
@@ -147,7 +147,7 @@ import swarmagan from '../assets/swarmagan_arch.webp';
 
             <Card title="Swarmagan" year="2023" href="https://github.com/MutilatedPeripherals/swarmagan-junction2023"
                 spacious>
-                <Image class="object-cover w-full px-4" src={swarmagan} alt="Swarmagan architecture" />
+                <Img class="object-cover w-full px-4" src={swarmagan} alt="Swarmagan architecture" />
 
                 <div class="flex flex-col justify-between p-4">
                     <p class="mb-3 font-normal text-gray-400">"Swarm-assisted conversational vendor data
