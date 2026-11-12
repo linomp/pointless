@@ -67,7 +67,7 @@ const noindex = import.meta.env.BASE_URL.replace(/\/$/, '') !== '';
 </head>
 
 <body class:list={["h-full", { "flex flex-col": flexBody }, "bg-black bg-cover bg-repeat font-roboto"]}
-    style={`background-image: linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))), url('${bg.src}'); background-size: 50%; --loader: url('${loaderSvg}');`}
+    style={`background-image: linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))), url('${bg.src}'); background-size: 50vw; --loader: url('${loaderSvg}'); --page-bg: url('${bg.src}');`}
     data-bg={bg.src}>
 
     <!-- Page background: starts black (a black layer over the photo) and fades in once the photo has loaded -->

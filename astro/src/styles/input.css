@@ -63,6 +63,22 @@ body.bg-loading {
         background-origin: content-box;
     }
 
+    /* Inside an opaque box (the black code cards, or an embed cover sitting on a player) the gaps would
+       otherwise show black. Repeat the page's tiled background there instead, with the page-background
+       fade veil, so the grid looks like a window through to the page. Elsewhere the real page background
+       already shows through. */
+    .bg-black:not(body) .loading-grid,
+    .embed-cover .loading-grid {
+        background-color: #000;
+        background-image:
+            var(--loader),
+            linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))),
+            var(--page-bg);
+        background-position: center, 0 0, 0 0;
+        background-size: cover, 100% 100%, 50vw auto;
+        background-repeat: no-repeat, no-repeat, repeat;
+    }
+
     /* the copy of the grid that fades out over a just-loaded image (gridFade in Layout.astro) */
     .grid-veil {
         pointer-events: none;
