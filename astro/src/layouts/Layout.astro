@@ -2,6 +2,7 @@
 import { getImage } from 'astro:assets';
 import '../styles/input.css';
 import { url } from '../lib/url';
+import { loaderSvg } from '../lib/loader';
 import background from '../assets/usfq_old.webp';
 
 interface Props {
@@ -44,15 +45,15 @@ const noindex = import.meta.env.BASE_URL.replace(/\/$/, '') !== '';
             setTimeout(() => placeholder.className = "hidden", 500);
         }
 
-        // Images (Img.astro): when one loads, lay a copy of its spinning spiral exactly over it and fade that out,
-        // so the spiral crossfades into the picture. Absolutely positioned, so the layout doesn't move.
-        // Images that loaded right away (cached) skip it: their spiral was never really visible.
-        const spiralFade = (img) => {
-            img.classList.remove("loading-spiral");
+        // Images (Img.astro): when one loads, lay a copy of its loading grid exactly over it and fade that out,
+        // so the grid crossfades into the picture. Absolutely positioned, so the layout doesn't move.
+        // Images that loaded right away (cached) skip it: their grid was never really visible.
+        const gridFade = (img) => {
+            img.classList.remove("loading-grid");
             if (performance.now() < 300 || !img.offsetWidth) return;
             const box = getComputedStyle(img);
             const veil = document.createElement("div");
-            veil.className = "loading-spiral spiral-veil";
+            veil.className = "loading-grid grid-veil";
             veil.setAttribute("aria-hidden", "true");
             Object.assign(veil.style, {
                 position: "absolute", left: img.offsetLeft + "px", top: img.offsetTop + "px",
@@ -60,13 +61,13 @@ const noindex = import.meta.env.BASE_URL.replace(/\/$/, '') !== '';
                 padding: box.padding, borderStyle: "solid", borderColor: "transparent", borderWidth: box.borderWidth,
             });
             img.after(veil);
-            setTimeout(() => veil.remove(), 600);
+            setTimeout(() => veil.remove(), 800);
         }
     </script>
 </head>
 
 <body class:list={["h-full", { "flex flex-col": flexBody }, "bg-black bg-cover bg-repeat font-roboto"]}
-    style={`background-image: linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))), url('${bg.src}'); background-size: 50%; --spiral: url('${url('spiral.svg')}');`}
+    style={`background-image: linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))), url('${bg.src}'); background-size: 50%; --loader: url('${loaderSvg}');`}
     data-bg={bg.src}>
 
     <!-- Page background: starts black (a black layer over the photo) and fades in once the photo has loaded -->

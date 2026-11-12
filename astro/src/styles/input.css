@@ -53,30 +53,30 @@ body.bg-loading {
     }
 }
 
-/* Image loader: every <Img> (Img.astro) has the spinning black and white spiral (/spiral.svg, which animates
-   itself) as its background until it has loaded; the image's onload then removes this class.
+/* Image loader: every <Img> (Img.astro) has a faint animated grid (inlined once in Layout.astro, so it is not
+   an extra request) as its background until it has loaded; the image's onload then removes this class.
    content-box so it never shows in an image's padding or under its border. */
 @layer components {
-    .loading-spiral {
-        background: var(--spiral) center / cover no-repeat;
+    .loading-grid {
+        background: var(--loader) center / cover no-repeat;
         background-clip: content-box;
         background-origin: content-box;
     }
 
-    /* the copy of the spiral that fades out over a just-loaded image (spiralFade in Layout.astro) */
-    .spiral-veil {
+    /* the copy of the grid that fades out over a just-loaded image (gridFade in Layout.astro) */
+    .grid-veil {
         pointer-events: none;
-        animation: spiral-veil-out 0.5s ease-out forwards;
+        animation: grid-veil-out 0.7s ease-out forwards;
     }
 
-    @keyframes spiral-veil-out {
+    @keyframes grid-veil-out {
         to {
             opacity: 0;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .spiral-veil {
+        .grid-veil {
             display: none;
         }
     }
