@@ -122,13 +122,14 @@ No manual WebP conversion or online compression: the build does it (sharp, defau
 - **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
 - **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").
 - **Tailwind config** is `tailwind.config.cjs` (content `./src/**/*.{astro,md,ts}`), with the same palette lock.
+- **Fonts** come from the Astro Fonts API: `fonts` in `astro.config.mjs` fetches Roboto Mono at build time, `<Font>` in `Layout.astro` preloads it, and CSS uses `var(--font-roboto-mono)`. Astro self-hosts the woff2 and generates a metric-matched monospace fallback. Don't add a Google Fonts `<link>` back.
 - **`build.format: 'file'`** keeps `/music.html`-style URLs.
 - After markup or CSS changes, check the pages at 375, 800 and 1280 px.
 
 ## Recurring patterns
 
 ### Page shell
-`Layout.astro` holds the `<head>` (favicon, Google Fonts Roboto Mono, CSS), the nav (HOME / CODE / MUSIC / GALLERY + GitHub & LinkedIn SVGs), the sticky footer (Home / Source / Contact, © year) and the tiled body background (optimized with `getImage()` because inline styles aren't processed). Pages only provide their content.
+`Layout.astro` holds the `<head>` (favicon, preloaded self-hosted Roboto Mono via the Fonts API, CSS), the nav (HOME / CODE / MUSIC / GALLERY + GitHub & LinkedIn SVGs), the sticky footer (Home / Source / Contact, © year) and the tiled body background (optimized with `getImage()` because inline styles aren't processed). Pages only provide their content.
 
 ### CSS-only "Details" accordion (`MusicEmbed.astro`)
 Hidden checkbox + `<label>` + sibling `.content` div, using Tailwind's `peer`:

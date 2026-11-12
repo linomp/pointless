@@ -1,5 +1,5 @@
 ---
-import { getImage } from 'astro:assets';
+import { getImage, Font } from 'astro:assets';
 import '../styles/input.css';
 import { url } from '../lib/url';
 import { loaderSvg } from '../lib/loader';
@@ -24,10 +24,7 @@ const bg = await getImage({ src: background });
     <title>p o i n t l e s s</title>
     <link rel="shortcut icon" href={url('favicon.ico')} type="image/x-icon">
     <link rel="icon" href={url('favicon.ico')} type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
-        rel="stylesheet">
+    <Font cssVariable="--font-roboto-mono" preload />
 
     <!-- Embeds: the cover sits on top of the player until it has loaded and had time to render, then fades out -->
     <script is:inline>
