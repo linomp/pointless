@@ -4,13 +4,13 @@
     {
       "name": "site",
       "runtimeExecutable": "busybox",
-      "runtimeArgs": ["httpd", "-f", "-p", "8137", "-h", "_site"],
+      "runtimeArgs": ["httpd", "-f", "-p", "8137", "-h", "dist"],
       "port": 8137
     },
     {
       "name": "astro-dev",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && cd astro && nvm use && npm run dev -- --port 4321"],
+      "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use && npm run dev -- --port 4321"],
       "port": 4321
     }
   ]
