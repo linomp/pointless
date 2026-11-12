@@ -13,6 +13,11 @@ Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `
 1. **Don't modernise the look and feel.** The owner likes the style exactly as it is. No trendy web design: no gradients, glassmorphism, rounded cards, drop shadows, hero sections, dark/light toggles, icon libraries, new fonts, fade-in or scroll animations, parallax, or "clean minimal SaaS" redesigns. Don't propose a redesign unprompted. New content copies existing blocks as they are.
 2. **Stick to the colour palette** (see "Colour palette (strict)" below).
 3. **Keep it snappy.** Pages are static HTML and one small CSS file, and should stay that way: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images go in as compressed WebP. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
+   - **Deliberate exceptions (owner's request, Astro version only):**
+     - While any image is still loading, a faint yellow-200 grid of squares fills its box: randomly scattered squares scale up towards the viewer and settle back, while the rest stay transparent. The gaps show the page's tiled background; inside black cards and embed covers (which would otherwise show black) the same background is repeated behind the grid. When the image arrives, the grid crossfades into it (0.7 s); images that were already cached skip the fade. The grid is an SVG data URI generated at build time by `src/lib/loader.ts` and inlined once in `Layout.astro` (so it costs no extra request), and is the image's CSS background (`.loading-grid`), added by `Img.astro`; the crossfade is `gridFade()` in `Layout.astro` (a temporary absolutely positioned copy over the image, so layout never moves).
+     - Embed covers fade out (0.4 s) when the player is ready.
+     - The page background starts black and fades in (0.8 s) once its photo has loaded (`--bg-veil` in `input.css`, script at the top of `<body>`).
+     - All of it respects `prefers-reduced-motion`. Don't add animations anywhere else without asking.
 4. **No new dependencies** (see below). The Astro port's dependencies are fixed too (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
 
 ## Philosophy
@@ -181,16 +186,19 @@ npm run build  # static output in astro/dist
 ```
 
 ### Adding things
-- **Video or album on the music page:** drop the cover image (any size, JPG/PNG/WebP) into `src/content/music/` and add `<id>.md` next to it. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio), Bandcamp entries also get a `fallback` link. The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+- **Video or album on the music page:** add `<id>.md` to `src/content/music/`. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio). The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+  - **YouTube:** nothing else needed. The placeholder is the video's own YouTube thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped to 16:9). Add `cover: ./<file>` only to use a different image.
+  - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
 - **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
 - **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
-- **Images anywhere else:** put them in `src/assets/`, import them and use `<Image>` from `astro:assets`. Never reference images from `public/` (they don't get optimized).
+- **Images anywhere else:** put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`: Astro's `<Image>` plus the loading grid). Never reference images from `public/` (they don't get optimized).
 
-No manual WebP conversion or online compression any more: the build does it (sharp, default quality 80, resized to the `width` given).
+No manual WebP conversion or online compression any more: the build does it (sharp, default quality 80, resized to the `width` given). Don't add an image-conversion script or pipeline to the repo.
 
 ### Rules specific to the Astro version
 - **Internal links** always go through `url()` from `src/lib/url.ts` (`url('music.html')`), never a hard-coded `/music.html`, because of the `/v2` base path.
 - **The swap script stays `<script is:inline>`** in `Layout.astro`. A normal `<script>` gets bundled as a module and breaks the iframes' `onload`.
+- **Embeds never change size.** Unlike the raw site (placeholder `<img>`, then an `h-0` iframe that grows), `EmbedPlayer.astro` renders one fixed-aspect box: the iframe fills it from the start, and the cover (`#<id>_placeholder`) sits on top and fades out after `load` + 1.5 s. So swapping causes no layout shift, and `loading="lazy"` on the iframes works properly. Keep it that way.
 - **No client-side JS** otherwise: no islands, view transitions or prefetch.
 - **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
 - **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").

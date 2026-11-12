@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Img from '../components/Img.astro';
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { url } from '../lib/url';
@@ -24,7 +24,7 @@ const photos = (await getCollection('gallery')).sort((a, b) => a.data.order - b.
             {photos.map(({ data }, i) => (
                 <article class:list={["flex flex-col shadow", i === 0 ? "mb-4" : "my-6"]}>
                     <div class="max-w-screen-md">
-                        <Image src={data.photo} width={Math.min(data.photo.width, 1536)} alt={data.title} />
+                        <Img src={data.photo} width={Math.min(data.photo.width, 1536)} alt={data.title} />
                     </div>
                     <div class="max-w-screen-md bg-black flex flex-col justify-start p-6">
                         <span class="text-white text-3xl font-bold">{data.title}</span>

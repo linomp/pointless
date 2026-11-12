@@ -19,7 +19,7 @@ Constraints (from `CLAUDE.md`): don't modernise the look, keep the palette locke
 | Where | `astro/` subfolder on `main`. The raw site stays at the repo root, untouched |
 | Testing on prod | Astro build served at **`/v2`** next to the live site, same Pages deploy |
 | Embeds | Same placeholder→iframe swap (1500 ms) as today, generated from content |
-| Embed content | One Markdown file per embed (`content/music/`), cover image next to it |
+| Embed content | One Markdown file per embed (`content/music/`). YouTube placeholders are the video's thumbnail fetched at build time; Bandcamp entries keep the album art next to the file |
 | Gallery | One Markdown file (frontmatter only) per photo (`content/gallery/`), photo next to it |
 | Code cards | Hand-written in `code.astro`, shared frame in `Card.astro` |
 | Images | Current WebPs/JPGs as sources (no originals yet), optimized at build by `astro:assets` (sharp, default quality 80) |
@@ -101,11 +101,16 @@ Found during the port are marked **(found)**.
 - `<script is:inline>` keeps it global so the iframes' `onload="..."` works (Astro would otherwise bundle it as a module).
 - Ids come from the entry's file name (`vigastada`, `vigastada_placeholder`, `detail-vigastada`).
 - Placeholders are `loading="eager"` like before.
+- **Later change: overlay instead of swap.** The iframe now fills a fixed-aspect box from the start, with the cover on top that fades out after `load` + 1.5 s. While any image loads (covers, gallery, cards), randomly scattered yellow-200 squares rise and settle over its box, the rest staying transparent and showing the page background (repeated inside black cards and embed covers, which would otherwise show black) — an SVG data URI inlined by `Layout.astro` from `src/lib/loader.ts`, animated with CSS only; on `onload` it crossfades into the picture (`Img.astro`, `gridFade()` in `Layout.astro`). The page background fades in from black once its photo has loaded. Measured with the layout-shift API: no shift during the swap, card boxes identical to the raw site at 375 and 1280 px. Side effect: lazy iframes now really load lazily (an `h-0` iframe used to load eagerly).
 - Known limitations unchanged (no JS fallback, 1500 ms guess).
 - **(found) The browser pane in the Claude app doesn't load YouTube/Bandcamp**, so the swap was verified by firing each iframe's `load` event: all 9 placeholders hide and iframes show at the right size. Check real players on `/v2` once live.
 
+- **(found) The dev server renders pages per request**, so awaiting the YouTube thumbnail lookup in each card held back the rest of the page (cards appeared one by one). `covers.ts` caches lookups per video.
+
 ### Images
-- Only images imported from `src/` are optimized.
+- Only images imported from `src/` are optimized, plus remote images from domains listed in `image.domains` (`img.youtube.com`).
+- **YouTube placeholders are fetched at build time** (`src/lib/covers.ts`): `maxresdefault.jpg` if it exists, else `hqdefault.jpg` with its black bars cropped off (`fit: 'cover'` to 16:9). The build needs to reach `img.youtube.com`; visitors only get the self-hosted WebP.
+- **Bandcamp album art can't be fetched automatically.** The embed player page has it (`data-player-data` → `album_art_id`), but Bandcamp only serves that page to browsers; getting it from a script would mean getting past their bot protection. Covers stay a file next to the entry.
 - Widths: covers ≤ 800 px, gallery ≤ 1536 px, crew images 1200 px, others natural size.
 - **(found) Re-encoding already-compressed WebPs at quality 85 made several bigger**; sharp's default 80 gives 1.12 MB total vs 1.63 MB today, so no custom quality.
 - Originals get committed forever (git history). Scale big photos to ~2000 px before adding.

@@ -1,0 +1,13 @@
+---
+// Astro's <Image>, plus the CSS grid loader (.loading-grid in input.css) behind it until the image has loaded,
+// then a short crossfade into the picture (gridFade in Layout.astro).
+// The grid is the image's own background, so it adds nothing to the layout.
+import { Image } from 'astro:assets';
+import type { ComponentProps } from 'astro/types';
+
+type Props = ComponentProps<typeof Image>;
+
+const { class: className, ...props } = Astro.props;
+---
+
+<Image {...props as Props} class:list={[className, 'loading-grid']} onload="gridFade(this)" />
