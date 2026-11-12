@@ -1,4 +1,4 @@
-# Deploys the raw site at / and the Astro port at /v2 in one GitHub Pages deployment.
+# Builds the Astro site and deploys it to GitHub Pages.
 # Requires repo Settings → Pages → Source: "GitHub Actions".
 name: Deploy to GitHub Pages
 
@@ -25,22 +25,18 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: astro/.nvmrc
+          node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: astro/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Build Astro site
-        working-directory: astro
+      - name: Build site
         run: |
           npm ci
           npm run build
 
-      - name: Assemble raw site at / and Astro build at /v2
-        run: ./assemble.sh _site
-
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: _site
+          path: dist
 
   deploy:
     needs: build

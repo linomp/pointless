@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
 
 // Markdown links to other sites open in a new tab, like the hand-written ones.
@@ -14,12 +14,19 @@ const externalLinksInNewTab = {
 
 export default defineConfig({
   site: 'https://pointless.xmp.systems',
-  // Served next to the raw site until switchover, then back to '/'.
-  base: '/v2',
-  // music.html instead of music/index.html, so URLs stay the same as today.
+  // music.html instead of music/index.html, so URLs stay the same as the old site.
   build: { format: 'file' },
   // YouTube placeholders are fetched from here at build time (src/lib/covers.ts).
   image: { domains: ['img.youtube.com'] },
+  fonts: [{
+    provider: fontProviders.google(),
+    name: 'Roboto Mono',
+    cssVariable: '--font-roboto-mono',
+    weights: [400, 500, 700],
+    styles: ['normal'],
+    subsets: ['latin'],
+    fallbacks: ['monospace'],
+  }],
   // Keep whitespace as written: compression drops spaces between text and inline tags ("Manta - <a>Ecuador</a>").
   compressHTML: false,
   markdown: {

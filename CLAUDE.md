@@ -1,35 +1,29 @@
 # CLAUDE.md
 
-Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `CNAME`) via GitHub Pages from `main`.
+Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `public/CNAME`) via GitHub Pages from `main` and built with Astro.
 
-**Two versions live side by side right now:**
-- the **raw site** (repo root, plain HTML) at `/`: everything below describes it unless a section says otherwise;
-- an **Astro port** (`astro/`) at `/v2`, being tested before it replaces the raw site. See "Astro port (`astro/`, served at `/v2`)" at the end and `port-plan.md`.
-
-`.github/workflows/pages.yml` deploys both (`assemble.sh` puts them together). While both exist, content changes have to be made in both places.
+`.github/workflows/pages.yml` builds the site and deploys `dist/` to Pages. The old hand-written raw site and the `/v2` preview are gone; Astro is now the only version, at the root.
 
 ## Hard rules
 
 1. **Don't modernise the look and feel.** The owner likes the style exactly as it is. No trendy web design: no gradients, glassmorphism, rounded cards, drop shadows, hero sections, dark/light toggles, icon libraries, new fonts, fade-in or scroll animations, parallax, or "clean minimal SaaS" redesigns. Don't propose a redesign unprompted. New content copies existing blocks as they are.
 2. **Stick to the colour palette** (see "Colour palette (strict)" below).
-3. **Keep it snappy.** Pages are static HTML and one small CSS file, and should stay that way: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images go in as compressed WebP. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
-   - **Deliberate exceptions (owner's request, Astro version only):**
+3. **Keep it snappy.** The site is static HTML and one small generated CSS file: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images are optimized at build time. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
+   - **Deliberate exceptions (owner's request):**
      - While any image is still loading, a faint yellow-200 grid of squares fills its box: randomly scattered squares scale up towards the viewer and settle back, while the rest stay transparent. The gaps show the page's tiled background; inside black cards and embed covers (which would otherwise show black) the same background is repeated behind the grid. When the image arrives, the grid crossfades into it (0.7 s); images that were already cached skip the fade. The grid is an SVG data URI generated at build time by `src/lib/loader.ts` and inlined once in `Layout.astro` (so it costs no extra request), and is the image's CSS background (`.loading-grid`), added by `Img.astro`; the crossfade is `gridFade()` in `Layout.astro` (a temporary absolutely positioned copy over the image, so layout never moves).
      - Embed covers fade out (0.4 s) when the player is ready.
-     - The page background starts black and fades in (0.8 s) once its photo has loaded (`--bg-veil` in `input.css`, script at the top of `<body>`).
      - All of it respects `prefers-reduced-motion`. Don't add animations anywhere else without asking.
-4. **No new dependencies** (see below). The Astro port's dependencies are fixed too (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
+4. **No new dependencies** (see below). Dependencies are fixed (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
 
 ## Philosophy
 
 Keep it **as simple and dependency-free as possible**. That is a deliberate choice, not an accident:
 
-- Plain hand-written HTML pages. No framework, no bundler, no templating, no `package.json`, no `node_modules`.
-- The only build step is the Tailwind CLI turning `css/input.css` into `css/output.css`.
-- **Duplication is accepted.** The nav bar, footer, `<head>` and card markup are copy-pasted into every page. Don't add includes, web components, JS-rendered partials or a static site generator to "fix" this unless asked.
-- Hardly anything is optimized: big inline SVG icons are repeated, gallery photos are raw `.jpg`. That's fine.
-
-When making changes, follow the existing copy-paste pattern: copy a neighbouring block and edit it.
+- Static Astro pages, built ahead of time. No client-side framework, islands, view transitions or prefetch.
+- The only build steps are Astro (HTML + image optimization) and Tailwind via PostCSS.
+- No separate CSS build script, no image-conversion script, no `assemble.sh`. `npm run build` is the whole build.
+- Hardly any client-side JS: just the inline embed-cover swap and image-grid crossfade.
+- No JS-rendered content: everything is in the HTML at build time.
 
 ## Look and feel
 
@@ -59,67 +53,85 @@ The owner cares a lot about this. **Use only these colours, in these roles.** Do
 | Category labels on cards | `text-blue-200` | `#bfdbfe` |
 | Secondary body text (`code.html`) | `text-gray-400` | `#9ca3af` |
 | Open accordion border | `border-blue-300` (in `.content`) | `#93c5fd` |
-| Tech pills only | `bg-fastapi(-light)`, `bg-svelte(-light)`, `bg-numpy`, `bg-javascript` | in `tailwind.config.js` |
+| Tech pills only | `bg-fastapi(-light)`, `bg-svelte(-light)`, `bg-numpy`, `bg-javascript` | in `tailwind.config.cjs` |
 
-Tech-pill colours represent each technology's brand and are never used for anything else. Add a new one to `tailwind.config.js` only when adding a pill for a new technology.
+Tech-pill colours represent each technology's brand and are never used for anything else. Add a new one to `tailwind.config.cjs` only when adding a pill for a new technology.
 
-The palette is **locked in `tailwind.config.js`**: `theme.colors` is replaced (not extended) with exactly these colours, so any other colour class (e.g. `text-red-500`) generates no CSS at all. If a colour class "doesn't work", that is why. Don't add a colour there to make it work; ask first.
+The palette is **locked in `tailwind.config.cjs`**: `theme.colors` is replaced (not extended) with exactly these colours, so any other colour class (e.g. `text-red-500`) generates no CSS at all. If a colour class "doesn't work", that is why. Don't add a colour there to make it work; ask first.
 
 ## Layout
 
 ```
-index.html      home: bio + 3 featured cards (dev project, album, own music)
-code.html       dev projects: grid of cards with tech "pills"
-music.html      own music projects (YouTube embeds) + /recommended (Bandcamp embeds)
-gallery.html    photo list
-contact.html    contact info
-css/input.css   Tailwind source: directives + 2 custom component classes
-css/output.css  generated, minified, COMMITTED (it's what's actually served)
-tailwind.config.js  content: ./*.html, plus custom colours for the tech pills
-build.sh / watch.sh one-liners calling the tailwindcss CLI
-media/img/      gallery jpgs, favicon
-media/img/webp/ compressed images used for cards and embed placeholders
+astro.config.mjs        site URL, file-style URLs, image domains, Satééééri markdown, cssTarget
+package.json            astro, @astrojs/markdown-satteri, tailwindcss (exact versions)
+package-lock.json
+.nvmrc / .npmrc         Node 26 / save-exact
+postcss.config.cjs, tailwind.config.cjs, tsconfig.json
+src/
+  assets/               images imported by pages (background, project cards, contact)
+  components/           Card.astro, Img.astro, EmbedPlayer.astro, MusicEmbed.astro
+  content/              music/<id>.md + cover, gallery/<name>.md + photo
+  content.config.ts     collections
+  layouts/Layout.astro  head, nav, footer, body background, inline scripts
+  lib/                  covers.ts, loader.ts, url.ts
+  pages/                index, code, music, gallery, contact (.astro)
+  styles/input.css      Tailwind source
+public/                 favicon.ico, CNAME (copied as-is)
+dist/                   build output (gitignored)
 ```
 
-`.gitignore` excludes local image working folders (`media/img/{original,compressed,resized,discarded}`); only final assets are committed.
+`.gitignore` excludes `node_modules`, `dist`, `.astro` and `_site`.
 
-## Building CSS
-
-Tailwind **v3.4.19**, standalone binary on `PATH` (installed from the GitHub release, SHA-256 checked). Config in `tailwind.config.js`, `@tailwind` directives in `input.css`. **Staying on v3 on purpose:** v4 changes default styles (border colour, hover, spacing selectors) and the browser baseline, and every page would need checking by eye. Don't upgrade or suggest it unless asked.
+## Commands
 
 ```bash
-./build.sh   # tailwindcss -i ./css/input.css -o ./css/output.css --minify
-./watch.sh   # same, --watch
+nvm use        # Node 26 from .nvmrc
+npm ci         # install exact versions from package-lock.json
+npm run dev    # dev server at http://localhost:4321/
+npm run build  # static output in dist/
 ```
 
-**After adding any Tailwind class that isn't used anywhere else yet, rebuild and commit `css/output.css`.** Otherwise the class has no effect in production. Custom colours (`bg-fastapi`, `bg-svelte-light`, `bg-numpy`, `bg-javascript`, …) live in `tailwind.config.js`.
-
-## Images
-
-Done by hand, outside the repo: convert to WebP, then compress with an online tool. Only the result goes into `media/img/webp/`; the working folders (`original`, `resized`, `compressed`, `discarded`) are gitignored. Nothing in the repo automates this, so don't add an image pipeline. Gallery photos (`media/img/*.jpg`, used by `gallery.html` with `loading="lazy"`) are still JPEG. `grind.jpg`, `lucta.jpg`, `usfq_old.jpg` and `dxc.png` aren't referenced anywhere.
+Tailwind **v3.4.19** via PostCSS. **Staying on v3 on purpose:** v4 changes default styles (border colour, hover, spacing selectors) and the browser baseline, and every page would need checking by eye. Don't upgrade or suggest it unless asked.
 
 ## Previewing
 
-Links are root-absolute (`/index.html`, `/music.html`), so open the site through a local server at the repo root, not `file://`:
+Build, then serve `dist/` through a local server (not `file://`):
 
 ```bash
-busybox httpd -f -p 8000   # owner's choice; python3 -m http.server 8000 also works
+npm run build
+busybox httpd -f -p 8000 -h dist   # owner's choice; python3 -m http.server 8000 also works
 ```
 
-To preview exactly what gets deployed (raw site at `/` and Astro at `/v2`), build Astro first (`npm run build` in `astro/`), then:
+The build recreates `dist/`, so restart the server after rebuilding. `npm run preview` also works for a quick look.
 
-```bash
-./assemble.sh _site && busybox httpd -f -p 8000 -h _site
-```
+## Adding things
+- **Video or album on the music page:** add `<id>.md` to `src/content/music/`. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio). The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+  - **YouTube:** nothing else needed. The cover is the video's own YouTube thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped to 16:9). Add `cover: ./<file>` only to use a different image.
+  - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
+- **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
+- **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
+- **Images anywhere else:** put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`: Astro's `<Image>` plus the loading grid). Never reference images from `public/` (they don't get optimized).
 
-`assemble.sh` deletes and recreates `_site`, so restart the server after re-running it.
+No manual WebP conversion or online compression: the build does it (sharp, default quality 80, resized to the `width` given). Don't add an image-conversion script or pipeline to the repo. Originals get committed forever, so scale big photos to ~2000 px before adding.
+
+## Rules specific to this site
+- **Internal links** always go through `url()` from `src/lib/url.ts` (`url('music.html')`), never a hard-coded `/music.html`.
+- **The swap script stays `<script is:inline>`** in `Layout.astro`. A normal `<script>` gets bundled as a module and breaks the iframes' `onload`.
+- **Embeds never change size.** `EmbedPlayer.astro` renders one fixed-aspect box: the iframe fills it from the start, and the cover (`#<id>_placeholder`) sits on top and fades out after `load` + 1.5 s. So swapping causes no layout shift, and `loading="lazy"` on the iframes works properly. Keep it that way.
+- **No client-side JS** otherwise: no islands, view transitions or prefetch.
+- **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
+- **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").
+- **Tailwind config** is `tailwind.config.cjs` (content `./src/**/*.{astro,md,ts}`), with the same palette lock.
+- **Fonts** come from the Astro Fonts API: `fonts` in `astro.config.mjs` fetches Roboto Mono at build time, `<Font>` in `Layout.astro` preloads it, and CSS uses `var(--font-roboto-mono)`. Astro self-hosts the woff2 and generates a metric-matched monospace fallback. Don't add a Google Fonts `<link>` back.
+- **`build.format: 'file'`** keeps `/music.html`-style URLs.
+- After markup or CSS changes, check the pages at 375, 800 and 1280 px.
 
 ## Recurring patterns
 
-### Page skeleton
-Every page repeats: `<head>` (favicon, Google Fonts Roboto Mono, `./css/output.css`) → `<nav>` (HOME / CODE / MUSIC / GALLERY + GitHub & LinkedIn SVGs) → content → sticky `<footer>` (Home / Source / Contact, © year). The body has a tiled background image (`usfq_old.webp`) set via inline `style`. A nav or footer change has to be made in all five HTML files.
+### Page shell
+`Layout.astro` holds the `<head>` (favicon, preloaded self-hosted Roboto Mono via the Fonts API, CSS), the nav (HOME / CODE / MUSIC / GALLERY + GitHub & LinkedIn SVGs), the sticky footer (Home / Source / Contact, © year) and the tiled body background (optimized with `getImage()` because inline styles aren't processed). Pages only provide their content.
 
-### CSS-only "Details" accordion (`music.html`)
+### CSS-only "Details" accordion (`MusicEmbed.astro`)
 Hidden checkbox + `<label>` + sibling `.content` div, using Tailwind's `peer`:
 
 ```html
@@ -130,77 +142,37 @@ Hidden checkbox + `<label>` + sibling `.content` div, using Tailwind's `peer`:
 </li>
 ```
 
-`.item` and `.content` are defined in `css/input.css` (`peer-checked:max-h-max` vs `max-h-0`). Checkbox `id`s must be unique per page. No JS.
+`.item` and `.content` are defined in `src/styles/input.css` (`peer-checked:max-h-max` vs `max-h-0`). Checkbox `id`s must be unique per page. No JS.
 
-### Embed skeleton/placeholder swap (`index.html`, `music.html`)
-YouTube and Bandcamp iframes take a while to load and render, which left an annoying empty box. So every embed is a **pair**:
-
-```html
-<img id="foo_placeholder" src="./media/img/webp/foo.webp" class="w-full aspect-video">
-<iframe id="foo" onload="setupPlaceholderReplacement(event)"
-        class="w-full aspect-video h-0" loading="lazy" src="..."></iframe>
-```
-
-The small inline script in each page's `<head>` (duplicated in `index.html` and `music.html`):
-
-1. On the iframe's `load` event, waits **1500 ms**. `load` fires before the player's own JS has finished drawing, so the delay hides that flash.
-2. Replaces the placeholder's whole `className` with `"hidden"`.
-3. Removes `h-0` from the iframe's class string, so it takes the aspect-ratio box the image was holding.
-
-Contract for adding an embed:
-- iframe `id` = `X`, placeholder `id` = `X_placeholder` (exact suffix).
-- Both share the same aspect class (`aspect-video` for YouTube, `aspect-square` for Bandcamp), so swapping them doesn't shift the layout.
-- iframe starts with `h-0` and has `onload="setupPlaceholderReplacement(event)"`.
-- Placeholder image is a `.webp` in `media/img/webp/` (a screenshot or cover of the embed).
-- Any page that uses it needs the script copied into its `<head>`.
+### Embeds
+The cover sits over a fixed-aspect iframe box from the start. The inline script in `Layout.astro` waits **1500 ms** after the iframe's `load` (the player's own JS is still drawing before that), then fades the cover out. Ids come from the content file name (`<id>`, `<id>_placeholder`, `detail-<id>`). `kind` picks `aspect-video` (YouTube) or `aspect-square` (Bandcamp) via full class names.
 
 Known limitations (accepted, keep them in mind when debugging):
-- No fallback: if JS is off or the iframe never fires `load`, the iframe stays at `h-0` and only the placeholder shows (not clickable).
-- `className.replace("h-0", "")` is a plain substring replace, so don't put classes containing `h-0` (e.g. `min-h-0`, `max-h-0`) on these iframes.
-- Some browsers (Chromium) load tiny or zero-height iframes eagerly, so `loading="lazy"` may be ignored while `h-0` is set. That costs bandwidth, not correctness.
+- No fallback: if JS is off or the iframe never fires `load`, the cover stays (not clickable).
 - 1500 ms is a fixed guess, not a "player ready" signal (cross-origin iframes don't expose one without the provider's JS API, which would be a dependency).
+- On the dev server, YouTube thumbnail lookups are cached in `covers.ts` so cards don't appear one by one.
 
 ### Cards
-- `index.html`: featured cards with a blue category link → big title → date → blurb → yellow CTA.
-- `code.html`: project cards with title/year, image, `text-gray-400` paragraphs, rounded tech pills (`bg-<tech>` colours from the config), and "Try demo" / "Check repo" links.
-- `gallery.html`: `<article>` with `loading="lazy"` image + title + place/year caption.
+- `index.astro`: featured cards with a blue category link → big title → date → blurb → yellow CTA.
+- `code.astro`: project cards via `Card.astro`, with title/year, image, `text-gray-400` paragraphs, rounded tech pills (`bg-<tech>` colours from the config), and "Try demo" / "Check repo" links.
+- `gallery.astro`: `<article>` with `loading="lazy"` image + title + place/year caption.
 
 Link style used everywhere for inline links: `text-yellow-200 hover:text-purple-400 hover:underline`, external links get `target="_blank"`.
 
+## Images
+- Only images imported from `src/` are optimized, plus remote images from domains listed in `image.domains` (`img.youtube.com`).
+- **YouTube covers are fetched at build time** (`src/lib/covers.ts`): `maxresdefault.jpg` if it exists, else `hqdefault.jpg` with its black bars cropped off (`fit: 'cover'` to 16:9). The build needs to reach `img.youtube.com`; visitors only get the self-hosted WebP.
+- **Bandcamp album art can't be fetched automatically.** The embed player page has it (`data-player-data` → `album_art_id`), but Bandcamp only serves that page to browsers; getting it from a script would mean getting past their bot protection. Covers stay a file next to the entry.
+- Widths: covers ≤ 800 px, gallery ≤ 1536 px, crew images 1200 px, others natural size.
+
+## Deployment
+- `main` → GitHub Pages via Actions. Repo Settings → Pages → Source must be "GitHub Actions".
+- CI reads `.nvmrc`, runs `npm ci` and `npm run build`, and uploads `dist/`.
+- `public/CNAME` puts the custom domain in the deployed root.
+- Jekyll doesn't run on Actions deploys, so `_astro/` is served fine.
+
 ## Known nits (low priority, fix only if touching nearby)
-- `music.html:236` has `class="flex-flex-col"` (typo, should be `flex flex-col`).
 - `font-roboto` on `<body>` isn't a defined utility; the font actually comes from the `html` rule in `input.css`.
-- Body background uses `url('../media/...')` from root pages; it works because `..` at the root resolves to the root.
 
-## Astro port (`astro/`, served at `/v2`)
-
-Same site, same markup, same look, built with Astro so images get optimized at build time and each embed is written once. All the rules above (look and feel, palette, snappy) apply unchanged. Full background, decisions and gotchas: `port-plan.md`.
-
-### Commands (in `astro/`)
-
-```bash
-nvm use        # Node 26 from .nvmrc
-npm ci         # install exact versions from package-lock.json
-npm run dev    # dev server at http://localhost:4321/v2/
-npm run build  # static output in astro/dist
-```
-
-### Adding things
-- **Video or album on the music page:** add `<id>.md` to `src/content/music/`. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio). The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
-  - **YouTube:** nothing else needed. The placeholder is the video's own YouTube thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped to 16:9). Add `cover: ./<file>` only to use a different image.
-  - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
-- **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
-- **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
-- **Images anywhere else:** put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`: Astro's `<Image>` plus the loading grid). Never reference images from `public/` (they don't get optimized).
-
-No manual WebP conversion or online compression any more: the build does it (sharp, default quality 80, resized to the `width` given). Don't add an image-conversion script or pipeline to the repo.
-
-### Rules specific to the Astro version
-- **Internal links** always go through `url()` from `src/lib/url.ts` (`url('music.html')`), never a hard-coded `/music.html`, because of the `/v2` base path.
-- **The swap script stays `<script is:inline>`** in `Layout.astro`. A normal `<script>` gets bundled as a module and breaks the iframes' `onload`.
-- **Embeds never change size.** Unlike the raw site (placeholder `<img>`, then an `h-0` iframe that grows), `EmbedPlayer.astro` renders one fixed-aspect box: the iframe fills it from the start, and the cover (`#<id>_placeholder`) sits on top and fades out after `load` + 1.5 s. So swapping causes no layout shift, and `loading="lazy"` on the iframes works properly. Keep it that way.
-- **No client-side JS** otherwise: no islands, view transitions or prefetch.
-- **Full Tailwind class names only.** Map variants to complete strings (`{ youtube: 'aspect-video' }`), never build them (`aspect-${kind}`).
-- **Don't turn `compressHTML` back on.** It removes spaces between text and links ("Manta -Ecuador").
-- **Tailwind config** is `astro/tailwind.config.cjs`, a copy of the root one with the same palette lock. Change both while both versions exist.
-- **Parity:** after markup or CSS changes, compare old and `/v2` pages side by side (see "Previewing").
+## History
+`port-plan.md` records the Astro port: decisions, gotchas and the parity check against the old raw site. It is historical; don't treat its `/v2` or raw-site instructions as current.

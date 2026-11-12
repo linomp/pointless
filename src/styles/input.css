@@ -4,7 +4,7 @@
 
 @layer base {
     html {
-        font-family: "Roboto Mono";
+        font-family: var(--font-roboto-mono);
     }
 }
 
@@ -30,29 +30,6 @@
 }
 
 
-/* Page background fade-in (Layout.astro): a black layer over the background photo whose opacity (--bg-veil)
-   goes from 1 to 0 once the photo has loaded. Registered so it can be transitioned; browsers without
-   @property just show the photo without the fade. */
-@property --bg-veil {
-    syntax: '<number>';
-    inherits: false;
-    initial-value: 0;
-}
-
-body {
-    transition: --bg-veil 0.8s ease-out;
-}
-
-body.bg-loading {
-    --bg-veil: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    body {
-        transition: none;
-    }
-}
-
 /* Image loader: every <Img> (Img.astro) has a faint animated grid (inlined once in Layout.astro, so it is not
    an extra request) as its background until it has loaded; the image's onload then removes this class.
    content-box so it never shows in an image's padding or under its border. */
@@ -64,19 +41,17 @@ body.bg-loading {
     }
 
     /* Inside an opaque box (the black code cards, or an embed cover sitting on a player) the gaps would
-       otherwise show black. Repeat the page's tiled background there instead, with the page-background
-       fade veil, so the grid looks like a window through to the page. Elsewhere the real page background
-       already shows through. */
+       otherwise show black. Repeat the page's tiled background there instead, so the grid looks like a
+       window through to the page. Elsewhere the real page background already shows through. */
     .bg-black:not(body) .loading-grid,
     .embed-cover .loading-grid {
         background-color: #000;
         background-image:
             var(--loader),
-            linear-gradient(rgb(0 0 0 / var(--bg-veil)), rgb(0 0 0 / var(--bg-veil))),
             var(--page-bg);
-        background-position: center, 0 0, 0 0;
-        background-size: cover, 100% 100%, 50vw auto;
-        background-repeat: no-repeat, no-repeat, repeat;
+        background-position: center, 0 0;
+        background-size: cover, 50vw auto;
+        background-repeat: no-repeat, repeat;
     }
 
     /* the copy of the grid that fades out over a just-loaded image (gridFade in Layout.astro) */
@@ -95,6 +70,14 @@ body.bg-loading {
         .grid-veil {
             display: none;
         }
+    }
+}
+
+/* Crew photos: show both at Frank's aspect ratio so the two cards line up; Vio's wider crop is centred. */
+@layer components {
+    .crew-photo {
+        aspect-ratio: 1438 / 642;
+        object-fit: cover;
     }
 }
 
