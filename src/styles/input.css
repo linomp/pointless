@@ -73,6 +73,14 @@
     }
 }
 
+/* Crew photos: show both at Frank's aspect ratio so the two cards line up; Vio's wider crop is centred. */
+@layer components {
+    .crew-photo {
+        aspect-ratio: 1438 / 642;
+        object-fit: cover;
+    }
+}
+
 /* Embeds (EmbedPlayer.astro): the cover sits on top of the player and fades out when the swap script adds .loaded. */
 @layer components {
     .embed-cover {
