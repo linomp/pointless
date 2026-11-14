@@ -10,7 +10,7 @@ Personal website ("p o i n t l e s s"), served at `pointless.xmp.systems` (see `
 2. **Stick to the colour palette** (see "Colour palette (strict)" below).
 3. **Keep it snappy.** The site is static HTML and one small generated CSS file: no JS frameworks, analytics, trackers, extra web fonts or third-party scripts. Images are optimized at build time. Any JS stays tiny and inline. Add no transitions or loading spinners that slow down how fast the site feels.
    - **Deliberate exceptions (owner's request):**
-     - While any image is still loading, a faint yellow-200 grid of squares fills its box: randomly scattered squares scale up towards the viewer and settle back, while the rest stay transparent. The gaps show the page's tiled background; inside black cards and embed covers (which would otherwise show black) the same background is repeated behind the grid. When the image arrives, the grid crossfades into it (0.7 s); images that were already cached skip the fade. The grid is an SVG data URI generated at build time by `src/lib/loader.ts` and inlined once in `Layout.astro` (so it costs no extra request), and is the image's CSS background (`.loading-grid`), added by `Img.astro`; the crossfade is `gridFade()` in `Layout.astro` (a temporary absolutely positioned copy over the image, so layout never moves).
+     - While any image is still loading, a faint yellow-200 grid of squares fills its box: randomly scattered squares scale up towards the viewer and settle back, while the rest stay transparent. The image's box is plain black behind the squares, wherever the image sits. When the image arrives, the grid crossfades into it (0.7 s); images that were already cached skip the fade. The grid is a 40×40 lattice of small squares (about 70% smaller than the original 12×12 one) in an SVG data URI generated at build time by `src/lib/loader.ts` and inlined once in `Layout.astro` (so it costs no extra request), and is the image's CSS background (`.loading-grid`), added by `Img.astro`; the crossfade is `gridFade()` in `Layout.astro` (a temporary absolutely positioned copy over the image, so layout never moves). Only a quarter of the positions animate (the rest would be invisible anyway and still cost paint work), each is a plain `<rect>` with one of 48 shared timing classes, instead of two inline styles per cell (not `<use>`/`<defs>`: Firefox doesn't animate elements referenced that way). The inlined SVG is ~47 KB raw and gzips to ~8 KB with the page.
      - Embed covers fade out (0.4 s) when the player is ready.
      - All of it respects `prefers-reduced-motion`. Don't add animations anywhere else without asking.
 4. **No new dependencies** (see below). Dependencies are fixed (`astro`, `@astrojs/markdown-satteri`, `tailwindcss`); don't add integrations or packages without asking.
@@ -80,7 +80,7 @@ public/                 favicon.ico, CNAME (copied as-is)
 dist/                   build output (gitignored)
 ```
 
-`.gitignore` excludes `node_modules`, `dist`, `.astro` and `_site`.
+`.gitignore` excludes `node_modules`, `dist`, `.astro`, `_site` and `.claude` (editor launch config, kept local).
 
 ## Commands
 
@@ -104,13 +104,192 @@ busybox httpd -f -p 8000 -h dist   # owner's choice; python3 -m http.server 8000
 
 The build recreates `dist/`, so restart the server after rebuilding. `npm run preview` also works for a quick look.
 
-## Adding things
-- **Video or album on the music page:** add `<id>.md` to `src/content/music/`. `section` is `projects` or `recommended`, `order` sets the position, `kind` is `youtube` or `bandcamp` (sets the aspect ratio). The Markdown body is the "Details" text; links in it open in a new tab automatically. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
-  - **YouTube:** nothing else needed. The cover is the video's own YouTube thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped to 16:9). Add `cover: ./<file>` only to use a different image.
-  - **Bandcamp:** also save the album art (any size) next to the file and set `cover: ./<file>`, plus a `fallback` link. Bandcamp has no public image URL for its players, and scraping it would mean getting past their bot protection, so this stays manual.
-- **Gallery photo:** drop the photo into `src/content/gallery/` and add `<name>.md` with `order`, `title`, `caption`, `photo: ./<file>`.
-- **Code card:** copy a `<Card>` block in `src/pages/code.astro`.
-- **Images anywhere else:** put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`: Astro's `<Image>` plus the loading grid). Never reference images from `public/` (they don't get optimized).
+## Adding and editing content
+
+| Page | Source | How content is stored |
+|---|---|---|
+| Homepage `/` | `src/pages/index.astro` | Hand-written cards, one block per featured item |
+| Music `/music.html` | `src/content/music/*.md` | One Markdown file per player |
+| Code `/code.html` | `src/pages/code.astro` | Hand-written `<Card>` blocks |
+| Gallery `/gallery.html` | `src/content/gallery/*.md` | One Markdown file per photo |
+| Contact `/contact.html` | `src/pages/contact.astro` | Hand-written |
+
+The homepage is **not** generated from the music collection. Editing a card there
+does not change `/music.html`, and vice versa. Keep both in sync if an item is
+featured in both places.
+
+### Homepage featured cards (`index.astro`)
+
+All featured cards are blocks inside the `.projects` grid in
+`src/pages/index.astro`. There are three: a dev project, a recommended album and
+a music project. Copy an existing block when replacing one; keep the same classes
+so the layout and colours stay consistent.
+
+**Recommended album** (second card, currently AFSKY):
+
+1. Save the album art in `src/assets/` (roughly ~800 px is enough).
+2. Import it at the top of `src/pages/index.astro`:
+   ```astro
+   import afsky from '../assets/afsky.webp';
+   ```
+3. Replace the card's player and text:
+   ```astro
+   <EmbedPlayer id="afsky" kind="bandcamp" cover={afsky}
+       src="https://bandcamp.com/EmbeddedPlayer/..."
+       fallback={{ href: 'https://afsky.bandcamp.com/album/f-llesskab', text: 'Fællesskab by AFSKY' }} />
+
+   <div class="bg-black flex flex-col justify-start p-6">
+       <a href={url('music.html')}
+           class="text-blue-200 text-sm font-bold uppercase pb-4 hover:underline">Recommended albums</a>
+       <a href="https://afsky.bandcamp.com/album/f-llesskab"
+           class="text-white text-3xl font-bold hover:text-purple-400 hover:underline pb-4"
+           target="_blank">Fællesskab by Afsky</a>
+       <p class="text-white text-sm pb-3">Released in October 2025</p>
+       <div class="text-white pb-6">
+           <p class="mb-3">Probably my favorite black metal band right now.</p>
+       </div>
+       <a href="https://afsky.bandcamp.com/album/f-llesskab" target="_blank"
+           class="uppercase text-yellow-200 hover:text-yellow-50 hover:underline">Listen on Bandcamp</a>
+   </div>
+   ```
+
+- `id` must be unique on the page; it also names the cover element (`<id>_placeholder`).
+- `kind="bandcamp"` uses a square (`aspect-square`) player and **requires** a `cover` image. Use `kind="youtube"` for a 16:9 video; a YouTube cover is fetched at build time, so `cover` can be omitted.
+- `src` is the player embed URL: from Bandcamp's *Share / Embed* dialog, or `https://www.youtube.com/embed/<video-id>`.
+- `fallback` is the link shown inside the Bandcamp iframe.
+- Keep the category label, title, release line, blurb and call-to-action structure. Link the label to `url('music.html')`.
+- Delete any image import the replaced card no longer uses.
+
+**Music project** (third card, currently Masakrador – Condenada): same procedure;
+change the category label to `Music Projects` and point the title, CTA and fallback
+at the project's page. For a YouTube project, use `kind="youtube"` and omit
+`cover`:
+
+```astro
+<EmbedPlayer id="masakrador" kind="youtube"
+    src="https://www.youtube.com/embed/vEPR8mTL3fM" />
+```
+
+To remove a featured card, delete the whole card `<div>` (and any now-unused
+image import). The grid handles fewer cards automatically.
+
+### Music page entries (`src/content/music/`)
+
+Each player on `/music.html` is one Markdown file in `src/content/music/`. The
+file name is the entry id (also used for the "Details" checkbox), so keep it
+unique. Copy an existing entry, e.g. `dxc.md` or `tonne.md`.
+
+For a **Bandcamp** album/track, save the album art next to the Markdown file and
+point `cover` at it (Bandcamp players can't be scraped for the art automatically):
+
+```yaml
+---
+section: recommended      # or: projects
+order: 4
+kind: bandcamp
+src: https://bandcamp.com/EmbeddedPlayer/album=1579120038/size=large/bgcol=333333/linkcol=ffffff/minimal=true/track=2513756695/transparent=true/
+cover: ./album.webp
+fallback:
+  href: https://abusobogota.bandcamp.com/album/s-t
+  text: S/T by Abuso
+---
+Angry & raw HC-punk from Colombia
+```
+
+For a **YouTube** video, nothing else is needed: the cover is the video's own
+thumbnail, fetched at build time (`src/lib/covers.ts`, largest available, cropped
+to 16:9). Add `cover: ./<file>` only to use a different image.
+
+```yaml
+---
+section: projects
+order: 2
+kind: youtube
+src: https://www.youtube.com/embed/QV-yRW7MrXw
+---
+DxC is a grindcore band with estonian roots. I played my first shows with them in early 2026.
+
+[Bandcamp](https://dinnerchristians.bandcamp.com/)
+```
+
+Frontmatter fields:
+
+| Field | Required | Notes |
+|---|---|---|
+| `section` | yes | `projects` or `recommended` |
+| `order` | yes | position within the section, ascending |
+| `kind` | yes | `youtube` or `bandcamp`; sets the player aspect ratio |
+| `src` | yes | player embed URL |
+| `cover` | Bandcamp: yes / YouTube: optional | image next to the Markdown file |
+| `fallback` | Bandcamp: recommended | `href` + `text` for the link inside the iframe |
+
+The Markdown body is the text inside the "Details" accordion; links there open in
+a new tab automatically.
+
+- **Edit text:** change the Markdown body.
+- **Reorder:** change `order`. Entries are sorted globally by `order`, then split into the two sections.
+- **Move between sections:** change `section`.
+- **Remove:** delete the `.md` file and any cover image that only it used.
+
+### Code page cards (`src/pages/code.astro`)
+
+Cards are `<Card>` blocks in `src/pages/code.astro`, in source order. Put
+screenshots in `src/assets/`, import them at the top of the page and copy an
+existing `<Card>` block:
+
+```astro
+<Card title="Project name" year="2026" href="https://github.com/linomp/repo">
+    <Img class="object-cover w-full px-2" src={myProject} alt="Project name" />
+    <div class="flex flex-col justify-between p-4 leading-normal">
+        <p class="mb-3 font-normal text-gray-400">What it does.</p>
+
+        <div class="flex space-x-2 mt-6 mb-4">
+            <span class="flex items-center px-2 py-1 bg-svelte-light text-sm font-medium rounded-full">
+                Svelte
+            </span>
+        </div>
+
+        <div class="flex flex-col mt-4">
+            <a href="https://example.com" target="_blank"
+                class="w-fit uppercase text-yellow-200 hover:text-purple-400 mb-4 hover:underline">Try demo</a>
+            <a href="https://github.com/linomp/repo" target="_blank"
+                class="w-fit uppercase text-yellow-200 hover:text-purple-400 hover:underline">Check repo</a>
+        </div>
+    </div>
+</Card>
+```
+
+- `Card` takes `title`, `year`, `href` (the title links there, opens in a new tab) and optional `spacious` (a little more room under the title, used by older cards).
+- Body text uses `text-gray-400`; inline links use the yellow/purple link style.
+- Tech pills are small rounded `<span>`s with an existing `bg-<tech>` / `bg-<tech>-light` class from `tailwind.config.cjs`. Only these classes exist; add a pill colour to the config first when adding a new technology.
+- Remove a card by deleting its `<Card>` block (and any unused image import).
+- The featured dev card on the homepage is a separate hand-written block in `src/pages/index.astro`; update it separately if the project is featured there.
+
+### Gallery photos (`src/content/gallery/`)
+
+Drop the photo into `src/content/gallery/` (scale large photos to roughly 2000 px
+before committing; the build resizes and converts them) and add `<name>.md` next
+to it:
+
+```yaml
+---
+order: 8
+title: Beach
+caption: Jaramijó - Ecuador, 2018
+photo: ./beach.jpg
+---
+```
+
+- `order` controls the position (ascending).
+- `title` is the large white caption; `caption` is the small line below it.
+- `photo` is the image file next to the Markdown file. It is rendered up to 1536 px wide.
+- **Edit:** change `title` / `caption` (or replace the image). **Reorder:** change `order`. **Remove:** delete both the `.md` file and its photo.
+
+### Images anywhere else
+
+Put them in `src/assets/`, import them and use `<Img>` (`src/components/Img.astro`:
+Astro's `<Image>` plus the loading grid). Never reference images from `public/`
+(they don't get optimized).
 
 No manual WebP conversion or online compression: the build does it (sharp, default quality 80, resized to the `width` given). Don't add an image-conversion script or pipeline to the repo. Originals get committed forever, so scale big photos to ~2000 px before adding.
 
@@ -153,7 +332,7 @@ Known limitations (accepted, keep them in mind when debugging):
 - On the dev server, YouTube thumbnail lookups are cached in `covers.ts` so cards don't appear one by one.
 
 ### Cards
-- `index.astro`: featured cards with a blue category link → big title → date → blurb → yellow CTA.
+- `index.astro`: hand-written featured cards (not generated from the music collection) with a blue category link → big title → date → blurb → yellow CTA.
 - `code.astro`: project cards via `Card.astro`, with title/year, image, `text-gray-400` paragraphs, rounded tech pills (`bg-<tech>` colours from the config), and "Try demo" / "Check repo" links.
 - `gallery.astro`: `<article>` with `loading="lazy"` image + title + place/year caption.
 
