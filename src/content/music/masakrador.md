@@ -1,12 +1,12 @@
 ---
 section: projects
-order: 3
+order: 2
 kind: youtube
 src: https://www.youtube.com/embed/vEPR8mTL3fM?si=qot_3nNyWjDougJX
 ---
-Recorded in Manta, Ecuador, 02/2025.
-
 Masakrador is a goregrind/grindcore duo formed with my cousin.
+
+This live session was recorded in Manta (EC) on 02/2025.
 
 [Check our Bandcamp](https://masakrador593.bandcamp.com/)
 
