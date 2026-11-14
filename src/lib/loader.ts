@@ -7,6 +7,9 @@ const cols = 40;
 const rows = 40;
 const pitch = 100 / cols;
 const size = +(pitch * 0.74).toFixed(2);
+// Only a quarter of the 40x40 positions animate. The others would be invisible anyway (all cells are
+// transparent most of the time) and each one costs paint work inside an SVG background image.
+const activeRatio = 0.25;
 
 // Deterministic pseudo-random, so every build produces the same SVG.
 const rand = (n: number) => {
@@ -30,6 +33,7 @@ const cells: string[] = [];
 for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
         const i = row * cols + col;
+        if (rand(i + 3000) >= activeRatio) continue;
         const t = Math.floor(rand(i + 2000) * timings);
         const x = (col * pitch + (pitch - size) / 2).toFixed(2);
         const y = (row * pitch + (pitch - size) / 2).toFixed(2);
