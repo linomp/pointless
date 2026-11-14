@@ -36,22 +36,9 @@
 @layer components {
     .loading-grid {
         background: var(--loader) center / cover no-repeat;
+        background-color: #000;
         background-clip: content-box;
         background-origin: content-box;
-    }
-
-    /* Inside an opaque box (the black code cards, or an embed cover sitting on a player) the gaps would
-       otherwise show black. Repeat the page's tiled background there instead, so the grid looks like a
-       window through to the page. Elsewhere the real page background already shows through. */
-    .bg-black:not(body) .loading-grid,
-    .embed-cover .loading-grid {
-        background-color: #000;
-        background-image:
-            var(--loader),
-            var(--page-bg);
-        background-position: center, 0 0;
-        background-size: cover, 50vw auto;
-        background-repeat: no-repeat, repeat;
     }
 
     /* the copy of the grid that fades out over a just-loaded image (gridFade in Layout.astro) */
